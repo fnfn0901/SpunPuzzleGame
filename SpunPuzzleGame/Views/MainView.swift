@@ -19,7 +19,7 @@ class MainView: UIView {
     }
     
     private func setupView() {
-        self.backgroundColor = UIColor(hex: "#01B42F") // UIColor 코드 사용
+        self.backgroundColor = UIColor(hex: "#01B42F")
 
         // 비디오 파일을 앱 번들에서 가져오기
         if let videoURL = Bundle.main.url(forResource: "숨은 동물 찾기송", withExtension: "mov") {
@@ -59,12 +59,13 @@ class MainView: UIView {
     private func setupButtons() {
         // 버튼 컨테이너 추가
         addSubview(buttonsContainer)
+        buttonsContainer.alpha = 0 // 버튼 컨테이너를 처음에 숨김 처리
         buttonsContainer.translatesAutoresizingMaskIntoConstraints = false
         
         // 버튼 컨테이너의 오토레이아웃 설정
         buttonsContainer.snp.makeConstraints { make in
-            make.top.equalTo(playerView.snp.bottom).offset(123) // 비디오와 첫 버튼 간의 간격
-            make.leading.trailing.equalToSuperview() // 버튼 컨테이너가 전체 너비를 차지하도록 설정
+            make.top.equalTo(playerView.snp.bottom).offset(123)
+            make.leading.trailing.equalToSuperview()
         }
         
         // 버튼 생성
@@ -79,26 +80,26 @@ class MainView: UIView {
         
         // 첫 번째 버튼 오토레이아웃
         firstButton.snp.makeConstraints { make in
-            make.top.equalTo(buttonsContainer.snp.top) // 첫 번째 버튼은 컨테이너의 상단에 배치
-            make.centerX.equalToSuperview() // 가로 중앙에 배치
-            make.width.equalTo(200) // 버튼 너비 설정
-            make.height.equalTo(60) // 버튼 높이 설정
+            make.top.equalTo(buttonsContainer.snp.top)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(200)
+            make.height.equalTo(60)
         }
         
         // 두 번째 버튼 오토레이아웃 (첫 번째 버튼에서 아래로 30만큼 떨어짐)
         secondButton.snp.makeConstraints { make in
-            make.top.equalTo(firstButton.snp.bottom).offset(30) // 첫 번째 버튼의 아래에서 30만큼 떨어짐
-            make.centerX.equalToSuperview() // 가로 중앙에 배치
-            make.width.equalTo(200) // 버튼 너비 설정
-            make.height.equalTo(60) // 버튼 높이 설정
+            make.top.equalTo(firstButton.snp.bottom).offset(30)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(200)
+            make.height.equalTo(60)
         }
         
         // 세 번째 버튼 오토레이아웃 (두 번째 버튼에서 아래로 30만큼 떨어짐)
         thirdButton.snp.makeConstraints { make in
-            make.top.equalTo(secondButton.snp.bottom).offset(30) // 두 번째 버튼의 아래에서 30만큼 떨어짐
-            make.centerX.equalToSuperview() // 가로 중앙에 배치
-            make.width.equalTo(200) // 버튼 너비 설정
-            make.height.equalTo(60) // 버튼 높이 설정
+            make.top.equalTo(secondButton.snp.bottom).offset(30)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(200)
+            make.height.equalTo(60)
         }
     }
     
@@ -119,17 +120,16 @@ class MainView: UIView {
         
         // 버튼 레이블 오토레이아웃 설정
         buttonLabel.snp.makeConstraints { make in
-            make.centerX.equalTo(buttonView) // 레이블을 버튼 중앙에 배치
-            make.centerY.equalTo(buttonView) // 레이블을 버튼 중앙에 배치
+            make.centerX.equalTo(buttonView)
+            make.centerY.equalTo(buttonView)
         }
         
         return buttonView
     }
     
     func showButtonsWithAnimation() {
-        buttonsContainer.alpha = 0 // 초기 상태를 숨김
         UIView.animate(withDuration: 0.5, animations: {
-            self.buttonsContainer.alpha = 1 // 애니메이션으로 나타나기
+            self.buttonsContainer.alpha = 1 // 버튼을 애니메이션과 함께 표시
         })
     }
 }

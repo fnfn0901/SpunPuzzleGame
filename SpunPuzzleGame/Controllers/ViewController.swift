@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     }
     
     private func setupView() {
-        view = mainView // MainView를 컨트롤러의 view로 설정
+        view = mainView
         
         // 비디오 재생 종료 알림을 통해 버튼 표시
         NotificationCenter.default.addObserver(self, selector: #selector(videoDidEnd), name: .AVPlayerItemDidPlayToEndTime, object: mainView.player?.currentItem)
@@ -26,15 +26,13 @@ class ViewController: UIViewController {
 
     func startVideoPlayback() {
         mainView.player?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
-        mainView.player?.play() // MainViewController가 표시된 후에 비디오 재생 시작
+        mainView.player?.play()
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "status" {
             if mainView.player?.status == .failed {
                 print("AVPlayer failed with error: \(String(describing: mainView.player?.error))")
-            } else if mainView.player?.status == .readyToPlay {
-                print("AVPlayer is ready to play")
             }
         }
     }
@@ -48,7 +46,7 @@ class ViewController: UIViewController {
             print("Audio session interrupted")
         } else if type == .ended {
             try? AVAudioSession.sharedInstance().setActive(true)
-            mainView.player?.play() // 재생 재개
+            mainView.player?.play()
         }
     }
 }
