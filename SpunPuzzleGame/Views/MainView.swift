@@ -8,6 +8,11 @@ class MainView: UIView {
     private var playerView: UIView = UIView() // AVPlayerLayer를 담을 뷰
     private var buttonsContainer: UIView = UIView() // 버튼을 담을 컨테이너 뷰
 
+    // 버튼 선언
+    let firstButton = UIButton()
+    let secondButton = UIButton()
+    let thirdButton = UIButton()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -68,63 +73,38 @@ class MainView: UIView {
             make.leading.trailing.equalToSuperview()
         }
         
-        // 버튼 생성
-        let firstButton = createButton(title: "게임 시작")
-        buttonsContainer.addSubview(firstButton)
-        
-        let secondButton = createButton(title: "게임 설명")
-        buttonsContainer.addSubview(secondButton)
-        
-        let thirdButton = createButton(title: "설정")
-        buttonsContainer.addSubview(thirdButton)
-        
-        // 첫 번째 버튼 오토레이아웃
+        // 첫 번째 버튼 추가
+        setupButton(firstButton, title: "게임 시작")
         firstButton.snp.makeConstraints { make in
-            make.top.equalTo(buttonsContainer.snp.top)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(200)
-            make.height.equalTo(60)
+            make.top.equalTo(buttonsContainer.snp.top) // 컨테이너 상단에 위치
         }
-        
-        // 두 번째 버튼 오토레이아웃 (첫 번째 버튼에서 아래로 30만큼 떨어짐)
+
+        // 두 번째 버튼 추가 (첫 번째 버튼 아래로 30)
+        setupButton(secondButton, title: "게임 설명")
         secondButton.snp.makeConstraints { make in
-            make.top.equalTo(firstButton.snp.bottom).offset(30)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(200)
-            make.height.equalTo(60)
+            make.top.equalTo(firstButton.snp.bottom).offset(30) // 첫 번째 버튼 아래로 30 간격
         }
-        
-        // 세 번째 버튼 오토레이아웃 (두 번째 버튼에서 아래로 30만큼 떨어짐)
+
+        // 세 번째 버튼 추가 (두 번째 버튼 아래로 30)
+        setupButton(thirdButton, title: "설정")
         thirdButton.snp.makeConstraints { make in
-            make.top.equalTo(secondButton.snp.bottom).offset(30)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(200)
-            make.height.equalTo(60)
+            make.top.equalTo(secondButton.snp.bottom).offset(30) // 두 번째 버튼 아래로 30 간격
         }
     }
     
-    private func createButton(title: String) -> UIView {
-        let buttonView = UIView()
-        buttonView.layer.backgroundColor = UIColor.white.cgColor
-        buttonView.layer.cornerRadius = 10
-        buttonView.translatesAutoresizingMaskIntoConstraints = false
+    private func setupButton(_ button: UIButton, title: String) {
+        button.layer.backgroundColor = UIColor.white.cgColor
+        button.layer.cornerRadius = 10
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(UIColor(hex: "#01B42F"), for: .normal)
+        button.titleLabel?.font = UIFont(name: "Inter24pt-Bold", size: 24)
+        buttonsContainer.addSubview(button)
         
-        // 버튼 레이블 설정
-        let buttonLabel = UILabel()
-        buttonLabel.text = title
-        buttonLabel.textColor = UIColor(hex: "#01B42F")
-        buttonLabel.font = UIFont(name: "Inter24pt-Bold", size: 24)
-        buttonLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        buttonView.addSubview(buttonLabel)
-        
-        // 버튼 레이블 오토레이아웃 설정
-        buttonLabel.snp.makeConstraints { make in
-            make.centerX.equalTo(buttonView)
-            make.centerY.equalTo(buttonView)
+        button.snp.makeConstraints { make in
+            make.width.equalTo(200)
+            make.height.equalTo(60)
+            make.centerX.equalToSuperview() // 가로 중앙에 배치
         }
-        
-        return buttonView
     }
     
     func showButtonsWithAnimation() {
