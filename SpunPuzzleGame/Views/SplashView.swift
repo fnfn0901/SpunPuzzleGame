@@ -21,9 +21,6 @@ class SplashView: UIView {
     private func setupView() {
         self.backgroundColor = UIColor(hex: "#00B8FD") // 배경 색상 설정
         
-        // playerView 배경 색을 설정하여 영역을 확인
-        playerView.backgroundColor = .black
-        
         // playerView를 먼저 추가한 후에 SnapKit 설정
         self.addSubview(playerView)
         
