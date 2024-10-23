@@ -1,3 +1,4 @@
 *.mov filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 SpunPuzzleGame/Resources/Videos/*.mov filter=lfs diff=lfs merge=lfs -text
+SpunPuzzleGame/Resources/Videos/*.mp4 filter=lfs diff=lfs merge=lfs -text
