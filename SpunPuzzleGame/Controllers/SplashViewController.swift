@@ -25,10 +25,15 @@ class SplashViewController: UIViewController {
             let mainViewController = ViewController()
             let navigationController = UINavigationController(rootViewController: mainViewController)
             
-            // 애니메이션 없이 루트 뷰 컨트롤러를 MainViewController로 변경
-            UIView.transition(with: window, duration: 0.5, options: [.transitionCrossDissolve], animations: {
+            // 전환 애니메이션 변경 (CrossDissolve -> FlipFromRight)
+            UIView.transition(with: window, duration: 0.5, options: [.transitionFlipFromRight], animations: {
                 window.rootViewController = navigationController
-            }, completion: nil)
+            }, completion: { _ in
+                // 비디오 재생을 0.5초 지연시킴
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    mainViewController.startVideoPlayback()
+                }
+            })
         }
     }
     
