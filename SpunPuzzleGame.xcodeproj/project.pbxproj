@@ -157,6 +157,8 @@
 				DEVELOPMENT_TEAM = QC8QR8UH59;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SpunPuzzleGame/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "가나다 퍼즐놀이";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.kids-games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -189,6 +191,8 @@
 				DEVELOPMENT_TEAM = QC8QR8UH59;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SpunPuzzleGame/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "가나다 퍼즐놀이";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.kids-games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
