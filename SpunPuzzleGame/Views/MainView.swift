@@ -25,6 +25,10 @@ class MainView: UIView {
     
     private func setupView() {
         self.backgroundColor = UIColor(hex: "#01B42F")
+        
+        // 터치 이벤트 활성화
+        self.isUserInteractionEnabled = true
+        buttonsContainer.isUserInteractionEnabled = true
 
         // 비디오 파일을 앱 번들에서 가져오기
         if let videoURL = Bundle.main.url(forResource: "숨은 동물 찾기송", withExtension: "mov") {
@@ -105,6 +109,9 @@ class MainView: UIView {
             make.height.equalTo(60)
             make.centerX.equalToSuperview() // 가로 중앙에 배치
         }
+        
+        // 터치 이벤트 활성화
+        button.isUserInteractionEnabled = true
     }
     
     func showButtonsWithAnimation() {

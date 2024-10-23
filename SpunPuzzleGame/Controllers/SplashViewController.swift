@@ -23,13 +23,12 @@ class SplashViewController: UIViewController {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {
             let mainViewController = ViewController()
-            let navigationController = UINavigationController(rootViewController: mainViewController)
+            let navigationController = UINavigationController(rootViewController: mainViewController)  // UINavigationController 추가
             
-            // 전환 애니메이션 변경 (CrossDissolve -> FlipFromRight)
+            // 전환 애니메이션
             UIView.transition(with: window, duration: 0.5, options: [.transitionFlipFromRight], animations: {
                 window.rootViewController = navigationController
             }, completion: { _ in
-                // 비디오 재생을 0.5초 지연시킴
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     mainViewController.startVideoPlayback()
                 }
@@ -38,7 +37,6 @@ class SplashViewController: UIViewController {
     }
     
     deinit {
-        // 옵저버 제거
         NotificationCenter.default.removeObserver(self)
     }
 }
