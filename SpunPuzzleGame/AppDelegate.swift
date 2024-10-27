@@ -1,35 +1,19 @@
 import UIKit
-import AVFoundation
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
-    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        // UIWindow 초기화
-        window = UIWindow(frame: UIScreen.main.bounds)
-        
-        // SplashViewController를 첫 화면으로 설정
-        let splashViewController = SplashViewController()
-        window?.rootViewController = splashViewController
-        window?.makeKeyAndVisible()
-        
-        // 오디오 세션 설정
-        setupAudioSession()
-        
+        // 앱이 시작될 때 필요한 설정을 초기화
         return true
     }
 
-    // 오디오 세션 설정 함수
-    func setupAudioSession() {
-        do {
-            let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playback, mode: .moviePlayback)
-            try audioSession.setActive(true)
-        } catch let error as NSError {
-            NSLog("Failed to set up audio session: \(error), \(error.userInfo)")
-        }
+    // MARK: UISceneSession Lifecycle
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+        // 불필요한 씬 세션이 제거될 때 호출됩니다.
     }
 }

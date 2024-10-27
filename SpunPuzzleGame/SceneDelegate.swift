@@ -7,14 +7,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        // UIWindow 인스턴스 생성
+        // UIWindow 인스턴스를 만들고 초기 뷰 컨트롤러를 설정
         window = UIWindow(windowScene: windowScene)
-        
-        let splashViewController = SplashViewController()
-        window?.rootViewController = splashViewController
-        
-        // UIWindow를 보이게 설정
+        let viewController = ViewController() // 초기 뷰 컨트롤러 설정
+        window?.rootViewController = viewController
         window?.makeKeyAndVisible()
     }
-
 }
