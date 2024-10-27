@@ -3,7 +3,7 @@ import SnapKit
 
 class MainView: UIView {
     
-    private let startButton: UIButton = {
+    internal let startButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(hex: "#FFFFFF")
         button.layer.cornerRadius = 10
@@ -13,7 +13,7 @@ class MainView: UIView {
         return button
     }()
     
-    private let infoButton: UIButton = {
+    internal let infoButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(hex: "#FFFFFF")
         button.layer.cornerRadius = 10
@@ -23,7 +23,7 @@ class MainView: UIView {
         return button
     }()
     
-    private let settingsButton: UIButton = {
+    internal let settingsButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(hex: "#FFFFFF")
         button.layer.cornerRadius = 10
