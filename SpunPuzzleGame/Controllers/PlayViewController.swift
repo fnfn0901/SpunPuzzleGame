@@ -12,6 +12,7 @@ class PlayViewController: UIViewController {
     
     private let customAlertView = CustomAlertView()
     private let progressView = ProgressView()
+    private let videoContainerView = VideoContainerView() // 16:9 영상 컨테이너
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,7 @@ class PlayViewController: UIViewController {
         setupDimmingView()
         setupAlertView()
         setupProgressView()
+        setupVideoContainer()
         
         // 초기 진행도 설정
         progressView.setProgress(currentProgress: 1, maxProgress: 14)
@@ -86,9 +88,23 @@ class PlayViewController: UIViewController {
         }
     }
     
+    private func setupVideoContainer() {
+        view.addSubview(videoContainerView)
+        
+        videoContainerView.snp.makeConstraints {
+            $0.top.equalTo(progressView.snp.bottom).offset(22) // 진행도 바 아래 22pt
+            $0.leading.trailing.equalToSuperview().inset(16) // 화면 가득 채우기 (양 옆 여백 16)
+            $0.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0) // 16:9 비율
+        }
+    }
+    
     private func showCustomAlert() {
         dimmingView.isHidden = false
         customAlertView.isHidden = false
+        
+        // 최상단에 위치하도록 설정
+        view.bringSubviewToFront(dimmingView)
+        view.bringSubviewToFront(customAlertView)
     }
     
     @objc private func hideCustomAlert() {
