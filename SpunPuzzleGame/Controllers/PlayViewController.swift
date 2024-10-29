@@ -38,6 +38,11 @@ class PlayViewController: UIViewController {
         navigationBar.backButtonAction = { [weak self] in
             self?.showCustomAlert()
         }
+        
+        // 설정 버튼에 설정 화면 연결
+        navigationBar.settingsButtonAction = { [weak self] in
+            self?.showSettingsModal()
+        }
     }
     
     private func setupDimmingView() {
@@ -77,5 +82,11 @@ class PlayViewController: UIViewController {
     @objc private func hideCustomAlert() {
         dimmingView.isHidden = true // 어두운 배경 숨기기
         customAlertView.isHidden = true
+    }
+    
+    private func showSettingsModal() {
+        let settingsVC = SettingsViewController()
+        settingsVC.modalPresentationStyle = .pageSheet
+        present(settingsVC, animated: true, completion: nil)
     }
 }

@@ -5,6 +5,8 @@ class CustomNavigationBar: UIView {
     
     // 뒤로가기 버튼 동작을 정의하는 클로저
     var backButtonAction: (() -> Void)?
+    // 설정 버튼 동작을 정의하는 클로저
+    var settingsButtonAction: (() -> Void)?
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -17,6 +19,7 @@ class CustomNavigationBar: UIView {
     private let settingsButton: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "gearshape"))
         imageView.tintColor = .white
+        imageView.isUserInteractionEnabled = true // 사용자 상호작용 가능하도록 설정
         return imageView
     }()
     
@@ -34,8 +37,12 @@ class CustomNavigationBar: UIView {
         setupLayout()
         
         // 뒤로가기 아이콘에 탭 제스처 추가
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backIconTapped))
-        backIcon.addGestureRecognizer(tapGesture)
+        let backTapGesture = UITapGestureRecognizer(target: self, action: #selector(backIconTapped))
+        backIcon.addGestureRecognizer(backTapGesture)
+        
+        // 설정 버튼에 탭 제스처 추가
+        let settingsTapGesture = UITapGestureRecognizer(target: self, action: #selector(settingsButtonTapped))
+        settingsButton.addGestureRecognizer(settingsTapGesture)
     }
     
     required init?(coder: NSCoder) {
@@ -72,5 +79,10 @@ class CustomNavigationBar: UIView {
     // 뒤로가기 버튼이 탭되었을 때 실행되는 메서드
     @objc private func backIconTapped() {
         backButtonAction?()
+    }
+    
+    // 설정 버튼이 탭되었을 때 실행되는 메서드
+    @objc private func settingsButtonTapped() {
+        settingsButtonAction?()
     }
 }
