@@ -8,6 +8,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Back 버튼 숨기기
+        navigationItem.hidesBackButton = true
+        
+        // 기존 코드
         view.addSubview(mainView)
         mainView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
