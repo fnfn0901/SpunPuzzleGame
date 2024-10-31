@@ -16,19 +16,20 @@ class CustomNavigationBar: UIView {
         return label
     }()
     
-    private let settingsButton: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "gearshape"))
-        imageView.tintColor = .white
-        imageView.isUserInteractionEnabled = true // 사용자 상호작용 가능하도록 설정
-        return imageView
+    private let settingsButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "gearshape"), for: .normal)
+        button.tintColor = .white
+        button.contentMode = .scaleAspectFit // 비율을 유지하며 크기 조절
+        return button
     }()
     
-    private let backIcon: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "chevron.backward"))
-        imageView.tintColor = .white
-        imageView.isUserInteractionEnabled = true // 사용자 상호작용 가능하도록 설정
-        imageView.contentMode = .scaleAspectFit // 비율을 유지하며 크기 조절
-        return imageView
+    private let backButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
+        button.tintColor = .white
+        button.contentMode = .scaleAspectFit // 비율을 유지하며 크기 조절
+        return button
     }()
     
     override init(frame: CGRect) {
@@ -36,13 +37,11 @@ class CustomNavigationBar: UIView {
         backgroundColor = UIColor(hex: "01B42F")
         setupLayout()
         
-        // 뒤로가기 아이콘에 탭 제스처 추가
-        let backTapGesture = UITapGestureRecognizer(target: self, action: #selector(backIconTapped))
-        backIcon.addGestureRecognizer(backTapGesture)
+        // 뒤로가기 버튼에 액션 추가
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
         
-        // 설정 버튼에 탭 제스처 추가
-        let settingsTapGesture = UITapGestureRecognizer(target: self, action: #selector(settingsButtonTapped))
-        settingsButton.addGestureRecognizer(settingsTapGesture)
+        // 설정 버튼에 액션 추가
+        settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -50,16 +49,15 @@ class CustomNavigationBar: UIView {
     }
     
     private func setupLayout() {
-        addSubview(backIcon)
+        addSubview(backButton)
         addSubview(titleLabel)
         addSubview(settingsButton)
 
-        // Back Icon Constraints
-        backIcon.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(30)
+        // Back Button Constraints (터치 영역을 더 크게 설정)
+        backButton.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16) // 여백 설정
             $0.centerY.equalTo(safeAreaLayoutGuide.snp.top).offset(20)
-            $0.height.equalTo(24)
-            $0.width.equalTo(12)
+            $0.height.width.equalTo(44) // 터치 영역을 넓게 설정
         }
         
         // Title Label Constraints
@@ -68,16 +66,16 @@ class CustomNavigationBar: UIView {
             $0.centerY.equalTo(safeAreaLayoutGuide.snp.top).offset(20)
         }
         
-        // Settings Button Constraints
+        // Settings Button Constraints (터치 영역을 더 크게 설정)
         settingsButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-24)
+            $0.trailing.equalToSuperview().offset(-16) // 여백 설정
             $0.centerY.equalTo(safeAreaLayoutGuide.snp.top).offset(20)
-            $0.width.height.equalTo(24)
+            $0.height.width.equalTo(44) // 터치 영역을 넓게 설정
         }
     }
     
     // 뒤로가기 버튼이 탭되었을 때 실행되는 메서드
-    @objc private func backIconTapped() {
+    @objc private func backButtonTapped() {
         backButtonAction?()
     }
     
