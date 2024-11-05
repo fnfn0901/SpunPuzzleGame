@@ -52,10 +52,16 @@ class PlayViewController: UIViewController {
     }
     
     private func handlePuzzlePieceTapped(_ piece: String) {
-        guard selectedAnswers.count < 4 else { return }
+        guard selectedAnswers.count < correctAnswer.count else { return }
         
-        selectedAnswers.append(piece)
-        playView.updateAnswerZone(with: selectedAnswers)
+        // 현재 추가하려는 글자가 정답 순서에 맞는지 확인
+        if piece == correctAnswer[selectedAnswers.count] {
+            selectedAnswers.append(piece)
+            playView.updateAnswerZone(with: selectedAnswers)
+        } else {
+            // 순서가 맞지 않는 경우: X 아이콘 표시
+            playView.showXIconForError()
+        }
         
         if selectedAnswers.count == correctAnswer.count {
             checkAnswer()
@@ -67,9 +73,10 @@ class PlayViewController: UIViewController {
             // 정답 처리
             print("정답!")
         } else {
-            // 오답 처리: X 아이콘 표시 후 제거
+            // 정답 순서가 틀린 경우
             playView.showXIconForError()
             selectedAnswers.removeAll()
+            playView.updateAnswerZone(with: selectedAnswers) // 기존 답을 초기화
         }
     }
     

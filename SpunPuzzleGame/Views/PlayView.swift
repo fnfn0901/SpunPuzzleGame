@@ -37,6 +37,7 @@ class PlayView: UIView {
         let imageView = UIImageView(image: UIImage(systemName: "xmark.circle"))
         imageView.tintColor = .red
         imageView.isHidden = true
+        imageView.layer.zPosition = 1 // 최상단에 위치
         return imageView
     }()
     
@@ -163,9 +164,10 @@ class PlayView: UIView {
         
         answerZoneView.layer.cornerRadius = 114 // 너비/높이의 절반으로 설정하여 원형 유지
         
-        answerZoneView.addSubview(xIcon)
+        addSubview(xIcon)
         xIcon.snp.makeConstraints {
-            $0.center.equalToSuperview()
+            $0.center.equalTo(answerZoneView)
+            $0.width.height.equalTo(145) // X 아이콘의 크기를 145x145로 설정
         }
     }
     
@@ -180,10 +182,10 @@ class PlayView: UIView {
         for (index, answer) in answers.enumerated() {
             let imageView = UIImageView(image: UIImage(named: answer))
             imageView.contentMode = .scaleAspectFit
-            addSubview(imageView) // answerZoneView 대신 self에 추가하여 경계를 벗어날 수 있게 함
+            answerZoneView.addSubview(imageView) // answerZoneView에 추가하여 경계 내에 표시
             
-            let xPosition = startX + CGFloat(index) * (imageSize + spacing) + answerZoneView.frame.origin.x
-            let yPosition = answerZoneView.frame.midY - (imageSize / 2)
+            let xPosition = startX + CGFloat(index) * (imageSize + spacing)
+            let yPosition = answerZoneView.bounds.midY - (imageSize / 2)
             
             imageView.frame = CGRect(x: xPosition, y: yPosition, width: imageSize, height: imageSize)
             answerImages.append(imageView)
@@ -194,7 +196,6 @@ class PlayView: UIView {
         xIcon.isHidden = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             self?.xIcon.isHidden = true
-            self?.updateAnswerZone(with: [])
         }
     }
     
