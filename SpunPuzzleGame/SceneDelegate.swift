@@ -10,8 +10,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let playViewController = PlayViewController() // PlayViewController로 변경
-        let navigationController = UINavigationController(rootViewController: playViewController)
+        let splashViewController = SplashViewController()
+        let navigationController = UINavigationController(rootViewController: splashViewController)
         
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
