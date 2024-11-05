@@ -28,6 +28,7 @@ class PlayView: UIView {
         view.backgroundColor = UIColor(hex: "#E3E3E3") // 회색 배경 추가
         view.layer.cornerRadius = 114
         view.layer.masksToBounds = true
+        view.clipsToBounds = false // 뷰의 경계를 벗어나도 잘리지 않도록 설정
         return view
     }()
     
@@ -164,7 +165,6 @@ class PlayView: UIView {
         answerZoneView.addSubview(xIcon)
         xIcon.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.width.height.equalTo(60)
         }
     }
     
@@ -172,17 +172,19 @@ class PlayView: UIView {
         answerImages.forEach { $0.removeFromSuperview() }
         answerImages.removeAll()
         
-        let imageSize: CGFloat = 50
-        let spacing: CGFloat = 10
+        let imageSize: CGFloat = (345 - 30) / 4 // puzzleBundleView의 사이즈와 동일한 크기로 설정
+        let spacing: CGFloat = -10
         let startX = (answerZoneView.bounds.width - (imageSize + spacing) * CGFloat(answers.count) + spacing) / 2
         
         for (index, answer) in answers.enumerated() {
             let imageView = UIImageView(image: UIImage(named: answer))
             imageView.contentMode = .scaleAspectFit
-            answerZoneView.addSubview(imageView)
+            addSubview(imageView) // answerZoneView 대신 self에 추가하여 경계를 벗어날 수 있게 함
             
-            let xPosition = startX + CGFloat(index) * (imageSize + spacing)
-            imageView.frame = CGRect(x: xPosition, y: (answerZoneView.bounds.height - imageSize) / 2, width: imageSize, height: imageSize)
+            let xPosition = startX + CGFloat(index) * (imageSize + spacing) + answerZoneView.frame.origin.x
+            let yPosition = answerZoneView.frame.midY - (imageSize / 2)
+            
+            imageView.frame = CGRect(x: xPosition, y: yPosition, width: imageSize, height: imageSize)
             answerImages.append(imageView)
         }
     }
