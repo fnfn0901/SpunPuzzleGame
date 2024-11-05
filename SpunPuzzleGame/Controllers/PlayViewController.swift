@@ -42,10 +42,8 @@ class PlayViewController: UIViewController {
             // 비디오 멈추기
             self.playView.videoContainerView.stopVideo()
             
-            // 메인 화면으로 이동
-            let mainVC = ViewController()
-            mainVC.modalPresentationStyle = .fullScreen
-            self.present(mainVC, animated: false, completion: nil)
+            // 네비게이션 스택 최상위 뷰 컨트롤러로 돌아가기 (ViewController)
+            self.navigationController?.popToRootViewController(animated: true)
         }
         
         playView.puzzlePieceTapped = { [weak self] piece in
