@@ -37,7 +37,15 @@ class PlayViewController: UIViewController {
         }
         
         playView.customAlertView.exitAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            guard let self = self else { return }
+            
+            // 비디오 멈추기
+            self.playView.videoContainerView.stopVideo()
+            
+            // 메인 화면으로 이동
+            let mainVC = ViewController()
+            mainVC.modalPresentationStyle = .fullScreen
+            self.present(mainVC, animated: false, completion: nil)
         }
         
         playView.puzzlePieceTapped = { [weak self] piece in

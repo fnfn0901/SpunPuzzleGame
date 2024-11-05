@@ -55,6 +55,10 @@ class VideoContainerView: UIView {
         addGestureRecognizer(tapGesture)
     }
     
+    func stopVideo() {
+        player?.pause() // 비디오 재생 중단
+    }
+    
     @objc private func videoDidEnd() {
         // 원하는 중간 지점 (50%)으로 이동하여 썸네일로 설정
         if let duration = player?.currentItem?.duration {

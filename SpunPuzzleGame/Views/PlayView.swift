@@ -106,6 +106,7 @@ class PlayView: UIView {
             $0.leading.trailing.equalToSuperview().inset(16)
             $0.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0)
         }
+        
     }
     
     private func setupPuzzleBundleView() {
