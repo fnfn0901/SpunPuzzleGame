@@ -1,8 +1,11 @@
 import UIKit
+import SnapKit
 
 class PlayViewController: UIViewController {
     
     private let playView = PlayView()
+    private var selectedAnswers: [String] = []
+    private let correctAnswer = ["ㄱ", "ㅓ", "ㅁ", "ㅣ"]
     
     override func loadView() {
         view = playView
@@ -35,6 +38,32 @@ class PlayViewController: UIViewController {
         
         playView.customAlertView.exitAction = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
+        }
+        
+        playView.puzzlePieceTapped = { [weak self] piece in
+            self?.handlePuzzlePieceTapped(piece)
+        }
+    }
+    
+    private func handlePuzzlePieceTapped(_ piece: String) {
+        guard selectedAnswers.count < 4 else { return }
+        
+        selectedAnswers.append(piece)
+        playView.updateAnswerZone(with: selectedAnswers)
+        
+        if selectedAnswers.count == correctAnswer.count {
+            checkAnswer()
+        }
+    }
+    
+    private func checkAnswer() {
+        if selectedAnswers == correctAnswer {
+            // 정답 처리
+            print("정답!")
+        } else {
+            // 오답 처리: X 아이콘 표시 후 제거
+            playView.showXIconForError()
+            selectedAnswers.removeAll()
         }
     }
     
