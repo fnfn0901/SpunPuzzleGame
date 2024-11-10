@@ -1,10 +1,15 @@
 import UIKit
 import SnapKit
+import AVFoundation
 
 class PlayView: UIView {
     
     // 퍼즐 조각이 선택되었을 때 호출되는 클로저
     var puzzlePieceTapped: ((String) -> Void)?
+    
+    // 정답과 선택된 답을 외부에서 설정할 수 있도록 클로저 추가
+    var correctAnswer: [String] = []
+    var selectedAnswers: [String] = []
     
     // UI 요소들
     let dimmingView: UIView = createDimmingView()
@@ -14,9 +19,11 @@ class PlayView: UIView {
     let navigationBar = CustomNavigationBar()
     let puzzleBundleView = UIView()
     let answerZoneView: UIView = createAnswerZoneView()
-    let xIcon: UIImageView = createXIcon()
     
     private var answerImages: [UIImageView] = []
+    
+    // AVAudioPlayer를 위한 변수
+    private var audioPlayer: AVAudioPlayer?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -107,12 +114,6 @@ class PlayView: UIView {
             $0.centerX.equalToSuperview()
             $0.width.height.equalTo(228)
         }
-        
-        addSubview(xIcon)
-        xIcon.snp.makeConstraints {
-            $0.center.equalTo(answerZoneView)
-            $0.width.height.equalTo(145)
-        }
     }
     
     func updateAnswerZone(with answers: [String]) {
@@ -135,17 +136,35 @@ class PlayView: UIView {
         }
     }
     
-    func showXIconForError() {
-        xIcon.isHidden = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.xIcon.isHidden = true
-        }
-    }
-    
     @objc private func puzzlePieceTappedAction(_ sender: UIButton) {
         let imageNames = ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"]
         let piece = imageNames[sender.tag]
+        
+        // 이미 선택된 답인지 확인
+        if selectedAnswers.contains(piece) {
+            return // 이미 맞춘 답은 다시 클릭할 수 없음
+        }
+        
+        // 정답인지 확인 후, click.mp3 또는 wrong.mp3를 재생
+        if piece == correctAnswer[selectedAnswers.count] {
+            selectedAnswers.append(piece)
+            playSound(named: "click.mp3")  // 정답이면 click.mp3
+        } else {
+            playSound(named: "wrong.mp3")  // 틀리면 wrong.mp3
+        }
+        
         puzzlePieceTapped?(piece)
+    }
+    
+    // 사운드 재생 메소드
+    func playSound(named soundName: String) {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: nil) else { return }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("오디오 파일 재생 실패: \(error)")
+        }
     }
     
     // MARK: - Helper Methods
@@ -164,14 +183,6 @@ class PlayView: UIView {
         view.layer.masksToBounds = true
         view.clipsToBounds = false
         return view
-    }
-    
-    private static func createXIcon() -> UIImageView {
-        let imageView = UIImageView(image: UIImage(systemName: "xmark.circle"))
-        imageView.tintColor = .red
-        imageView.isHidden = true
-        imageView.layer.zPosition = 1
-        return imageView
     }
     
     private func createGridStackView(with imageNames: [String]) -> UIStackView {

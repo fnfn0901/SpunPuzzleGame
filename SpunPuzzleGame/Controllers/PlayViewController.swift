@@ -15,6 +15,10 @@ class PlayViewController: UIViewController {
         navigationController?.isNavigationBarHidden = true
         setupActions()
         playView.progressView.setProgress(currentProgress: 1, maxProgress: 14)
+        
+        // 정답과 선택된 답을 PlayView에 전달
+        playView.correctAnswer = correctAnswer
+        playView.selectedAnswers = selectedAnswers
     }
     
     private func setupActions() {
@@ -46,8 +50,6 @@ class PlayViewController: UIViewController {
         if piece == correctAnswer[selectedAnswers.count] {
             selectedAnswers.append(piece)
             playView.updateAnswerZone(with: selectedAnswers)
-        } else {
-            playView.showXIconForError()
         }
         
         if selectedAnswers.count == correctAnswer.count {
@@ -59,7 +61,6 @@ class PlayViewController: UIViewController {
         if selectedAnswers == correctAnswer {
             print("정답!")
         } else {
-            playView.showXIconForError()
             selectedAnswers.removeAll()
             playView.updateAnswerZone(with: selectedAnswers)
         }
