@@ -1,5 +1,4 @@
 import UIKit
-import SnapKit
 
 class PlayViewController: UIViewController {
     
@@ -15,8 +14,6 @@ class PlayViewController: UIViewController {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
         setupActions()
-        
-        // 초기 진행도 설정
         playView.progressView.setProgress(currentProgress: 1, maxProgress: 14)
     }
     
@@ -29,21 +26,13 @@ class PlayViewController: UIViewController {
             self?.showSettingsModal()
         }
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideCustomAlert))
-        playView.dimmingView.addGestureRecognizer(tapGesture)
-        
+        playView.dimmingView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideCustomAlert)))
         playView.customAlertView.cancelAction = { [weak self] in
             self?.hideCustomAlert()
         }
         
         playView.customAlertView.exitAction = { [weak self] in
-            guard let self = self else { return }
-            
-            // 비디오 멈추기
-            self.playView.videoContainerView.stopVideo()
-            
-            // 네비게이션 스택 최상위 뷰 컨트롤러로 돌아가기 (ViewController)
-            self.navigationController?.popToRootViewController(animated: true)
+            self?.exitGame()
         }
         
         playView.puzzlePieceTapped = { [weak self] piece in
@@ -54,12 +43,10 @@ class PlayViewController: UIViewController {
     private func handlePuzzlePieceTapped(_ piece: String) {
         guard selectedAnswers.count < correctAnswer.count else { return }
         
-        // 현재 추가하려는 글자가 정답 순서에 맞는지 확인
         if piece == correctAnswer[selectedAnswers.count] {
             selectedAnswers.append(piece)
             playView.updateAnswerZone(with: selectedAnswers)
         } else {
-            // 순서가 맞지 않는 경우: X 아이콘 표시
             playView.showXIconForError()
         }
         
@@ -70,13 +57,11 @@ class PlayViewController: UIViewController {
     
     private func checkAnswer() {
         if selectedAnswers == correctAnswer {
-            // 정답 처리
             print("정답!")
         } else {
-            // 정답 순서가 틀린 경우
             playView.showXIconForError()
             selectedAnswers.removeAll()
-            playView.updateAnswerZone(with: selectedAnswers) // 기존 답을 초기화
+            playView.updateAnswerZone(with: selectedAnswers)
         }
     }
     
@@ -96,5 +81,10 @@ class PlayViewController: UIViewController {
         let settingsVC = SettingsViewController()
         settingsVC.modalPresentationStyle = .pageSheet
         present(settingsVC, animated: true, completion: nil)
+    }
+    
+    private func exitGame() {
+        playView.videoContainerView.stopVideo()
+        navigationController?.popToRootViewController(animated: true)
     }
 }

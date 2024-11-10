@@ -6,40 +6,17 @@ class PlayView: UIView {
     // 퍼즐 조각이 선택되었을 때 호출되는 클로저
     var puzzlePieceTapped: ((String) -> Void)?
     
-    let dimmingView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        view.isHidden = true
-        return view
-    }()
-    
+    // UI 요소들
+    let dimmingView: UIView = createDimmingView()
     let customAlertView = CustomAlertView()
     let progressView = ProgressView()
     let videoContainerView = VideoContainerView()
     let navigationBar = CustomNavigationBar()
-    
-    private let puzzleBundleView: UIView = {
-        let view = UIView()
-        return view
-    }()
-    
-    private let answerZoneView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(hex: "#E3E3E3") // 회색 배경 추가
-        view.layer.cornerRadius = 114
-        view.layer.masksToBounds = true
-        view.clipsToBounds = false // 뷰의 경계를 벗어나도 잘리지 않도록 설정
-        return view
-    }()
+    let puzzleBundleView = UIView()
+    let answerZoneView: UIView = createAnswerZoneView()
+    let xIcon: UIImageView = createXIcon()
     
     private var answerImages: [UIImageView] = []
-    private let xIcon: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "xmark.circle"))
-        imageView.tintColor = .red
-        imageView.isHidden = true
-        imageView.layer.zPosition = 1 // 최상단에 위치
-        return imageView
-    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,7 +40,6 @@ class PlayView: UIView {
     
     private func setupNavigationBar() {
         addSubview(navigationBar)
-        
         navigationBar.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             navigationBar.topAnchor.constraint(equalTo: topAnchor),
@@ -75,9 +51,7 @@ class PlayView: UIView {
     
     private func setupDimmingView() {
         addSubview(dimmingView)
-        dimmingView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
+        dimmingView.snp.makeConstraints { $0.edges.equalToSuperview() }
     }
     
     private func setupAlertView() {
@@ -107,7 +81,6 @@ class PlayView: UIView {
             $0.leading.trailing.equalToSuperview().inset(16)
             $0.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0)
         }
-        
     }
     
     private func setupPuzzleBundleView() {
@@ -120,34 +93,7 @@ class PlayView: UIView {
         }
         
         let imageNames = ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"]
-        let gridStackView = UIStackView()
-        gridStackView.axis = .vertical
-        gridStackView.distribution = .fillEqually
-        gridStackView.spacing = 8
-        
-        for row in 0..<2 {
-            let rowStackView = UIStackView()
-            rowStackView.axis = .horizontal
-            rowStackView.distribution = .fillEqually
-            rowStackView.spacing = 8
-            
-            for col in 0..<4 {
-                let index = row * 4 + col
-                let button = UIButton()
-                button.tag = index
-                
-                if let image = UIImage(named: imageNames[index]) {
-                    button.setImage(image, for: .normal) // 이미지 설정
-                } else {
-                    print("이미지를 찾을 수 없습니다: \(imageNames[index])") // 디버그 로그
-                }
-                
-                button.addTarget(self, action: #selector(puzzlePieceTappedAction(_:)), for: .touchUpInside)
-                rowStackView.addArrangedSubview(button)
-            }
-            gridStackView.addArrangedSubview(rowStackView)
-        }
-        
+        let gridStackView = createGridStackView(with: imageNames)
         puzzleBundleView.addSubview(gridStackView)
         gridStackView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(10)
@@ -159,15 +105,13 @@ class PlayView: UIView {
         answerZoneView.snp.makeConstraints {
             $0.top.equalTo(puzzleBundleView.snp.bottom).offset(10)
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(228) // 너비와 높이를 동일하게 설정하여 원형 유지
+            $0.width.height.equalTo(228)
         }
-        
-        answerZoneView.layer.cornerRadius = 114 // 너비/높이의 절반으로 설정하여 원형 유지
         
         addSubview(xIcon)
         xIcon.snp.makeConstraints {
             $0.center.equalTo(answerZoneView)
-            $0.width.height.equalTo(145) // X 아이콘의 크기를 145x145로 설정
+            $0.width.height.equalTo(145)
         }
     }
     
@@ -175,18 +119,17 @@ class PlayView: UIView {
         answerImages.forEach { $0.removeFromSuperview() }
         answerImages.removeAll()
         
-        let imageSize: CGFloat = (345 - 30) / 4 // puzzleBundleView의 사이즈와 동일한 크기로 설정
+        let imageSize: CGFloat = (345 - 30) / 4
         let spacing: CGFloat = -10
         let startX = (answerZoneView.bounds.width - (imageSize + spacing) * CGFloat(answers.count) + spacing) / 2
         
         for (index, answer) in answers.enumerated() {
             let imageView = UIImageView(image: UIImage(named: answer))
             imageView.contentMode = .scaleAspectFit
-            answerZoneView.addSubview(imageView) // answerZoneView에 추가하여 경계 내에 표시
+            answerZoneView.addSubview(imageView)
             
             let xPosition = startX + CGFloat(index) * (imageSize + spacing)
             let yPosition = answerZoneView.bounds.midY - (imageSize / 2)
-            
             imageView.frame = CGRect(x: xPosition, y: yPosition, width: imageSize, height: imageSize)
             answerImages.append(imageView)
         }
@@ -203,5 +146,60 @@ class PlayView: UIView {
         let imageNames = ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"]
         let piece = imageNames[sender.tag]
         puzzlePieceTapped?(piece)
+    }
+    
+    // MARK: - Helper Methods
+    
+    private static func createDimmingView() -> UIView {
+        let view = UIView()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        view.isHidden = true
+        return view
+    }
+    
+    private static func createAnswerZoneView() -> UIView {
+        let view = UIView()
+        view.backgroundColor = UIColor(hex: "#E3E3E3")
+        view.layer.cornerRadius = 114
+        view.layer.masksToBounds = true
+        view.clipsToBounds = false
+        return view
+    }
+    
+    private static func createXIcon() -> UIImageView {
+        let imageView = UIImageView(image: UIImage(systemName: "xmark.circle"))
+        imageView.tintColor = .red
+        imageView.isHidden = true
+        imageView.layer.zPosition = 1
+        return imageView
+    }
+    
+    private func createGridStackView(with imageNames: [String]) -> UIStackView {
+        let gridStackView = UIStackView()
+        gridStackView.axis = .vertical
+        gridStackView.distribution = .fillEqually
+        gridStackView.spacing = 8
+        
+        for row in 0..<2 {
+            let rowStackView = UIStackView()
+            rowStackView.axis = .horizontal
+            rowStackView.distribution = .fillEqually
+            rowStackView.spacing = 8
+            
+            for col in 0..<4 {
+                let index = row * 4 + col
+                let button = UIButton()
+                button.tag = index
+                if let image = UIImage(named: imageNames[index]) {
+                    button.setImage(image, for: .normal)
+                } else {
+                    print("이미지를 찾을 수 없습니다: \(imageNames[index])")
+                }
+                button.addTarget(self, action: #selector(puzzlePieceTappedAction(_:)), for: .touchUpInside)
+                rowStackView.addArrangedSubview(button)
+            }
+            gridStackView.addArrangedSubview(rowStackView)
+        }
+        return gridStackView
     }
 }
