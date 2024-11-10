@@ -5,6 +5,7 @@ class SplashView: UIView {
 
     private var playerLayer: AVPlayerLayer?
     private let videoContainerView = UIView() // 비디오 컨테이너 뷰 추가
+    let skipButton = UIButton() // 스킵 버튼 추가
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,6 +29,20 @@ class SplashView: UIView {
             videoContainerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             videoContainerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             videoContainerView.heightAnchor.constraint(equalTo: videoContainerView.widthAnchor, multiplier: 9.0 / 16.0) // 16:9 비율 유지
+        ])
+        
+        // 스킵 버튼 설정
+        addSubview(skipButton)
+        skipButton.setTitle("Skip", for: .normal)
+        skipButton.setTitleColor(.white, for: .normal)
+        skipButton.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        skipButton.layer.cornerRadius = 5
+        skipButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            skipButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            skipButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50),
+            skipButton.widthAnchor.constraint(equalToConstant: 80),
+            skipButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     

@@ -37,6 +37,16 @@ class MainView: UIView {
         return button
     }()
     
+    internal let skipButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        button.layer.cornerRadius = 5
+        button.setTitle("스킵", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        return button
+    }()
+    
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
     private let videoContainerView = UIView() // AVPlayerLayer를 담을 UIView
@@ -60,6 +70,7 @@ class MainView: UIView {
         addSubview(startButton)
         addSubview(infoButton)
         addSubview(settingsButton)
+        addSubview(skipButton)
         
         videoContainerView.backgroundColor = .clear // 배경색 투명하게 설정
         videoContainerView.clipsToBounds = true // 경계를 넘지 않도록 제한
@@ -90,6 +101,20 @@ class MainView: UIView {
             make.centerX.equalToSuperview()
             make.bottom.equalTo(infoButton.snp.top).offset(-30)
         }
+        
+        // 스킵 버튼 설정
+        addSubview(skipButton)
+        skipButton.setTitle("Skip", for: .normal)
+        skipButton.setTitleColor(.white, for: .normal)
+        skipButton.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        skipButton.layer.cornerRadius = 5
+        skipButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            skipButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            skipButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50),
+            skipButton.widthAnchor.constraint(equalToConstant: 80),
+            skipButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
     }
     
     private func setupVideoPlayer() {
@@ -118,10 +143,24 @@ class MainView: UIView {
     }
     
     @objc private func videoDidEnd() {
-        // 영상이 끝났을 때 버튼을 보이도록 설정
+        showButtons()
+    }
+    
+    func showButtons() {
+        // 버튼들을 표시
         startButton.isHidden = false
         infoButton.isHidden = false
         settingsButton.isHidden = false
+        skipButton.isHidden = true // 스킵 버튼 숨기기
+    }
+    
+    func skipToEndOfVideo() {
+        guard let player = player, let duration = player.currentItem?.duration else { return }
+        let endTime = CMTimeGetSeconds(duration)
+        player.seek(to: CMTime(seconds: endTime, preferredTimescale: 600)) { [weak self] _ in
+            player.pause() // 영상 멈추기
+            self?.showButtons() // 버튼 보이기
+        }
     }
     
     override func layoutSubviews() {

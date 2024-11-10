@@ -22,9 +22,20 @@ class SplashViewController: UIViewController {
             splashView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             splashView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        // 스킵 버튼의 액션 설정
+        splashView.skipButton.addTarget(self, action: #selector(skipButtonTapped), for: .touchUpInside)
     }
     
     @objc private func videoDidEnd() {
+        transitionToMainViewController()
+    }
+    
+    @objc private func skipButtonTapped() {
+        transitionToMainViewController()
+    }
+    
+    private func transitionToMainViewController() {
         // ViewController를 새로운 네비게이션 스택의 루트로 설정
         let mainViewController = ViewController()
         let navigationController = UINavigationController(rootViewController: mainViewController)

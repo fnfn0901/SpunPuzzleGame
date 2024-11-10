@@ -21,6 +21,7 @@ class ViewController: UIViewController {
         mainView.startButton.addTarget(self, action: #selector(navigateToPlay), for: .touchUpInside)
         mainView.infoButton.addTarget(self, action: #selector(showInfoModal), for: .touchUpInside)
         mainView.settingsButton.addTarget(self, action: #selector(showSettingsModal), for: .touchUpInside)
+        mainView.skipButton.addTarget(self, action: #selector(skipVideo), for: .touchUpInside)
     }
     
     @objc private func navigateToPlay() {
@@ -38,5 +39,9 @@ class ViewController: UIViewController {
         let settingsVC = SettingsViewController()
         settingsVC.modalPresentationStyle = .pageSheet
         present(settingsVC, animated: true, completion: nil)
+    }
+    
+    @objc private func skipVideo() {
+        mainView.skipToEndOfVideo() // 스킵 버튼 동작
     }
 }
