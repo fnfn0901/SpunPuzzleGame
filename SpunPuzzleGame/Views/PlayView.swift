@@ -153,6 +153,11 @@ class PlayView: UIView {
             playSound(named: "wrong.mp3")  // 틀리면 wrong.mp3
         }
         
+        // 모든 답이 맞았을 때 pass.wav 추가로 재생
+        if selectedAnswers.count == correctAnswer.count {
+            playSound(named: "pass.wav")  // 모든 답이 맞으면 pass.wav
+        }
+        
         puzzlePieceTapped?(piece)
     }
     
