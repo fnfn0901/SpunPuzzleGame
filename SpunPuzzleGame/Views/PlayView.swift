@@ -138,40 +138,15 @@ class PlayView: UIView {
 
     // MARK: - 정답 맞춘 후 화면 변경
     func updateViewForCorrectAnswer(with answers: [String]) {
+        // 퍼즐 영역 숨김
         puzzleBundleView.isHidden = true
-        answerZoneView.isHidden = true
-        
-        cookieView?.removeFromSuperview() // 기존 쿠키 뷰 제거
-        let cookieView = UIView()
-        self.cookieView = cookieView
-        addSubview(cookieView)
-        
-        cookieView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(50)
-            $0.width.equalTo(answers.count * 50 + (answers.count - 1) * 10)
-            $0.height.equalTo(60)
-        }
-        
-        let spacing: CGFloat = 10
-        let imageSize: CGFloat = 50
 
-        for (index, answer) in answers.enumerated() {
-            let imageView = UIImageView(image: UIImage(named: answer))
-            imageView.contentMode = .scaleAspectFit
-            cookieView.addSubview(imageView)
-            
-            imageView.snp.makeConstraints {
-                $0.leading.equalToSuperview().offset(CGFloat(index) * (imageSize + spacing))
-                $0.centerY.equalToSuperview()
-                $0.width.height.equalTo(imageSize)
-            }
-        }
+        // 정답 영역 배경 숨김
+        answerZoneView.backgroundColor = .clear
 
-        videoContainerView.snp.remakeConstraints {
-            $0.top.equalToSuperview().offset(200)
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0)
+        // 정답 쿠키는 유지 (answerImages에 추가된 이미지들)
+        for imageView in answerImages {
+            imageView.isHidden = false
         }
     }
     
@@ -187,7 +162,7 @@ class PlayView: UIView {
         let view = UIView()
         view.backgroundColor = UIColor(hex: "#E3E3E3")
         view.layer.cornerRadius = 114
-        view.layer.masksToBounds = true
+        view.layer.masksToBounds = false
         return view
     }
     
