@@ -148,6 +148,17 @@ class PlayView: UIView {
         for imageView in answerImages {
             imageView.isHidden = false
         }
+
+        // answerZoneView 위치 변경
+        answerZoneView.snp.remakeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(228)
+            $0.height.equalTo(10)
+        }
+
+        // 레이아웃 업데이트
+        layoutIfNeeded()
     }
     
     // MARK: - Helper Methods
