@@ -121,58 +121,45 @@ class PlayView: UIView {
         answerImages.removeAll()
         
         let imageSize: CGFloat = (345 - 30) / 4
-        let spacing: CGFloat = -10
-        let startX = (answerZoneView.bounds.width - (imageSize + spacing) * CGFloat(answers.count) + spacing) / 2
-        
+        let spacing: CGFloat = 10
+
+        // `answerZoneView`의 중심을 기준으로 이미지 위치를 계산
         for (index, answer) in answers.enumerated() {
             let imageView = UIImageView(image: UIImage(named: answer))
             imageView.contentMode = .scaleAspectFit
             answerZoneView.addSubview(imageView)
             
-            let xPosition = startX + CGFloat(index) * (imageSize + spacing)
-            let yPosition = answerZoneView.bounds.midY - (imageSize / 2)
-            imageView.frame = CGRect(x: xPosition, y: yPosition, width: imageSize, height: imageSize)
+            imageView.snp.makeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.width.height.equalTo(imageSize)
+                // 가로 간격 유지하면서 중심에 정렬
+                let offset = CGFloat(index - answers.count / 2) * (imageSize + spacing)
+                make.centerX.equalToSuperview().offset(offset)
+            }
             answerImages.append(imageView)
         }
     }
 
     // MARK: - 정답 맞춘 후 화면 변경
     func updateViewForCorrectAnswer(with answers: [String]) {
+        // 정답존 숨기기
         puzzleBundleView.isHidden = true
         answerZoneView.isHidden = true
-        
-        cookieView?.removeFromSuperview() // 기존 쿠키 뷰 제거
-        let cookieView = UIView()
-        self.cookieView = cookieView
-        addSubview(cookieView)
-        
-        cookieView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(50)
-            $0.width.equalTo(answers.count * 50 + (answers.count - 1) * 10)
-            $0.height.equalTo(60)
-        }
-        
-        let spacing: CGFloat = 10
-        let imageSize: CGFloat = 50
 
-        for (index, answer) in answers.enumerated() {
-            let imageView = UIImageView(image: UIImage(named: answer))
-            imageView.contentMode = .scaleAspectFit
-            cookieView.addSubview(imageView)
+        // 정답 이미지뷰를 PlayView로 이동
+        for (index, imageView) in answerImages.enumerated() {
+            // PlayView에 이미지뷰 추가
+            self.addSubview(imageView)
             
-            imageView.snp.makeConstraints {
-                $0.leading.equalToSuperview().offset(CGFloat(index) * (imageSize + spacing))
-                $0.centerY.equalToSuperview()
-                $0.width.height.equalTo(imageSize)
+            // 중앙 정렬 위치 재설정
+            imageView.snp.remakeConstraints { make in
+                let offset = CGFloat(index - answers.count / 2) * (imageView.frame.width + 10)
+                make.centerX.equalToSuperview().offset(offset)
+                make.centerY.equalTo(answerZoneView.snp.centerY)
+                make.width.height.equalTo(imageView.frame.size.width)
             }
         }
 
-        videoContainerView.snp.remakeConstraints {
-            $0.top.equalToSuperview().offset(200)
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0)
-        }
     }
     
     // MARK: - Helper Methods
