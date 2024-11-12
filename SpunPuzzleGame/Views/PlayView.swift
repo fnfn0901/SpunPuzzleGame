@@ -4,14 +4,12 @@ import AVFoundation
 
 class PlayView: UIView {
     
-    // 퍼즐 조각이 선택되었을 때 호출되는 클로저
+    // MARK: - 외부에서 설정 가능한 변수
     var puzzlePieceTapped: ((String) -> Void)?
-    
-    // 정답과 선택된 답을 외부에서 설정할 수 있도록 클로저 추가
     var correctAnswer: [String] = []
     var selectedAnswers: [String] = []
     
-    // UI 요소들
+    // MARK: - UI 요소
     let dimmingView: UIView = createDimmingView()
     let customAlertView = CustomAlertView()
     let progressView = ProgressView()
@@ -21,10 +19,10 @@ class PlayView: UIView {
     let answerZoneView: UIView = createAnswerZoneView()
     
     private var answerImages: [UIImageView] = []
-    
-    // AVAudioPlayer를 위한 변수
     private var audioPlayer: AVAudioPlayer?
-    
+    private var cookieView: UIView?
+
+    // MARK: - 초기화
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -34,6 +32,7 @@ class PlayView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - View 설정
     private func setupViews() {
         backgroundColor = .white
         setupNavigationBar()
@@ -115,7 +114,8 @@ class PlayView: UIView {
             $0.width.height.equalTo(228)
         }
     }
-    
+
+    // MARK: - 퍼즐 정답 업데이트
     func updateAnswerZone(with answers: [String]) {
         answerImages.forEach { $0.removeFromSuperview() }
         answerImages.removeAll()
@@ -135,45 +135,47 @@ class PlayView: UIView {
             answerImages.append(imageView)
         }
     }
-    
-    @objc private func puzzlePieceTappedAction(_ sender: UIButton) {
-        let imageNames = ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"]
-        let piece = imageNames[sender.tag]
+
+    // MARK: - 정답 맞춘 후 화면 변경
+    func updateViewForCorrectAnswer(with answers: [String]) {
+        puzzleBundleView.isHidden = true
+        answerZoneView.isHidden = true
         
-        // 이미 선택된 답인지 확인
-        if selectedAnswers.contains(piece) {
-            return // 이미 맞춘 답은 다시 클릭할 수 없음
+        cookieView?.removeFromSuperview() // 기존 쿠키 뷰 제거
+        let cookieView = UIView()
+        self.cookieView = cookieView
+        addSubview(cookieView)
+        
+        cookieView.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview().offset(50)
+            $0.width.equalTo(answers.count * 50 + (answers.count - 1) * 10)
+            $0.height.equalTo(60)
         }
         
-        // 정답인지 확인 후, click.mp3 또는 wrong.mp3를 재생
-        if piece == correctAnswer[selectedAnswers.count] {
-            selectedAnswers.append(piece)
-            playSound(named: "click.mp3")  // 정답이면 click.mp3
-        } else {
-            playSound(named: "wrong.mp3")  // 틀리면 wrong.mp3
+        let spacing: CGFloat = 10
+        let imageSize: CGFloat = 50
+
+        for (index, answer) in answers.enumerated() {
+            let imageView = UIImageView(image: UIImage(named: answer))
+            imageView.contentMode = .scaleAspectFit
+            cookieView.addSubview(imageView)
+            
+            imageView.snp.makeConstraints {
+                $0.leading.equalToSuperview().offset(CGFloat(index) * (imageSize + spacing))
+                $0.centerY.equalToSuperview()
+                $0.width.height.equalTo(imageSize)
+            }
         }
-        
-        // 모든 답이 맞았을 때 pass.wav 추가로 재생
-        if selectedAnswers.count == correctAnswer.count {
-            playSound(named: "pass.wav")  // 모든 답이 맞으면 pass.wav
-        }
-        
-        puzzlePieceTapped?(piece)
-    }
-    
-    // 사운드 재생 메소드
-    func playSound(named soundName: String) {
-        guard let url = Bundle.main.url(forResource: soundName, withExtension: nil) else { return }
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-        } catch {
-            print("오디오 파일 재생 실패: \(error)")
+
+        videoContainerView.snp.remakeConstraints {
+            $0.top.equalToSuperview().offset(200)
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0)
         }
     }
     
     // MARK: - Helper Methods
-    
     private static func createDimmingView() -> UIView {
         let view = UIView()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
@@ -186,7 +188,6 @@ class PlayView: UIView {
         view.backgroundColor = UIColor(hex: "#E3E3E3")
         view.layer.cornerRadius = 114
         view.layer.masksToBounds = true
-        view.clipsToBounds = false
         return view
     }
     
@@ -208,8 +209,6 @@ class PlayView: UIView {
                 button.tag = index
                 if let image = UIImage(named: imageNames[index]) {
                     button.setImage(image, for: .normal)
-                } else {
-                    print("이미지를 찾을 수 없습니다: \(imageNames[index])")
                 }
                 button.addTarget(self, action: #selector(puzzlePieceTappedAction(_:)), for: .touchUpInside)
                 rowStackView.addArrangedSubview(button)
@@ -217,5 +216,11 @@ class PlayView: UIView {
             gridStackView.addArrangedSubview(rowStackView)
         }
         return gridStackView
+    }
+    
+    @objc private func puzzlePieceTappedAction(_ sender: UIButton) {
+        let imageNames = ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"]
+        let piece = imageNames[sender.tag]
+        puzzlePieceTapped?(piece)
     }
 }

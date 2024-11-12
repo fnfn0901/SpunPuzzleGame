@@ -15,8 +15,6 @@ class PlayViewController: UIViewController {
         navigationController?.isNavigationBarHidden = true
         setupActions()
         playView.progressView.setProgress(currentProgress: 1, maxProgress: 14)
-        
-        // 정답과 선택된 답을 PlayView에 전달
         playView.correctAnswer = correctAnswer
         playView.selectedAnswers = selectedAnswers
     }
@@ -60,6 +58,7 @@ class PlayViewController: UIViewController {
     private func checkAnswer() {
         if selectedAnswers == correctAnswer {
             playView.videoContainerView.replaceVideo(with: "거미 정답")
+            playView.updateViewForCorrectAnswer(with: correctAnswer)
         } else {
             selectedAnswers.removeAll()
             playView.updateAnswerZone(with: selectedAnswers)
