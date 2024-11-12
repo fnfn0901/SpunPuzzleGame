@@ -59,7 +59,7 @@ class PlayViewController: UIViewController {
     
     private func checkAnswer() {
         if selectedAnswers == correctAnswer {
-            print("정답!")
+            playView.videoContainerView.replaceVideo(with: "거미 정답")
         } else {
             selectedAnswers.removeAll()
             playView.updateAnswerZone(with: selectedAnswers)

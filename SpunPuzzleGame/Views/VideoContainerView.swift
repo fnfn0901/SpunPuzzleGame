@@ -9,7 +9,7 @@ class VideoContainerView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
-        setupVideoPlayer()
+        setupVideoPlayer(fileName: "거미 문제")
         setupTapGesture()
     }
     
@@ -23,9 +23,9 @@ class VideoContainerView: UIView {
         clipsToBounds = true // Corner radius가 적용되도록 설정
     }
     
-    private func setupVideoPlayer() {
-        guard let videoPath = Bundle.main.path(forResource: "거미 문제", ofType: "mp4") else {
-            print("비디오 파일을 찾을 수 없습니다.")
+    private func setupVideoPlayer(fileName: String) {
+        guard let videoPath = Bundle.main.path(forResource: fileName, ofType: "mp4") else {
+            print("\(fileName) 비디오 파일을 찾을 수 없습니다.")
             return
         }
         
@@ -57,6 +57,12 @@ class VideoContainerView: UIView {
     
     func stopVideo() {
         player?.pause() // 비디오 재생 중단
+    }
+    
+    func replaceVideo(with fileName: String) {
+        stopVideo() // 기존 비디오 중단
+        playerLayer?.removeFromSuperlayer() // 기존 플레이어 레이어 제거
+        setupVideoPlayer(fileName: fileName) // 새로운 비디오 설정
     }
     
     @objc private func videoDidEnd() {
