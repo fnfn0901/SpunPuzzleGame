@@ -2,6 +2,17 @@ import UIKit
 import SnapKit
 import AVFoundation
 
+// 헬퍼 메서드: Skip 버튼 생성
+func createSkipButton() -> UIButton {
+    let button = UIButton()
+    button.setTitle("Skip", for: .normal)
+    button.setTitleColor(.white, for: .normal)
+    button.backgroundColor = UIColor(white: 0, alpha: 0.5)
+    button.layer.cornerRadius = 5
+    button.translatesAutoresizingMaskIntoConstraints = false
+    return button
+}
+
 class MainView: UIView {
     
     internal let startButton: UIButton = {
@@ -11,7 +22,7 @@ class MainView: UIView {
         button.setTitle("게임 시작", for: .normal)
         button.setTitleColor(UIColor(hex: "#01B42F"), for: .normal)
         button.titleLabel?.font = UIFont(name: "Inter24pt-Bold", size: 24)
-        button.isHidden = true // 초기에는 숨김 상태
+        button.isHidden = true
         return button
     }()
     
@@ -22,7 +33,7 @@ class MainView: UIView {
         button.setTitle("게임 설명", for: .normal)
         button.setTitleColor(UIColor(hex: "#01B42F"), for: .normal)
         button.titleLabel?.font = UIFont(name: "Inter24pt-Bold", size: 24)
-        button.isHidden = true // 초기에는 숨김 상태
+        button.isHidden = true
         return button
     }()
     
@@ -33,23 +44,15 @@ class MainView: UIView {
         button.setTitle("설정", for: .normal)
         button.setTitleColor(UIColor(hex: "#01B42F"), for: .normal)
         button.titleLabel?.font = UIFont(name: "Inter24pt-Bold", size: 24)
-        button.isHidden = true // 초기에는 숨김 상태
+        button.isHidden = true
         return button
     }()
     
-    internal let skipButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = UIColor(white: 0, alpha: 0.5)
-        button.layer.cornerRadius = 5
-        button.setTitle("스킵", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        return button
-    }()
+    internal let skipButton: UIButton = createSkipButton()
     
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
-    private let videoContainerView = UIView() // AVPlayerLayer를 담을 UIView
+    private let videoContainerView = UIView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -72,13 +75,13 @@ class MainView: UIView {
         addSubview(settingsButton)
         addSubview(skipButton)
         
-        videoContainerView.backgroundColor = .clear // 배경색 투명하게 설정
-        videoContainerView.clipsToBounds = true // 경계를 넘지 않도록 제한
+        videoContainerView.backgroundColor = .clear
+        videoContainerView.clipsToBounds = true
         
         videoContainerView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(166) // 상단에서 166pt 떨어진 위치
-            make.leading.trailing.equalToSuperview() // 가로로 화면에 꽉 차도록 설정
-            make.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0) // 세로는 16:9 비율 유지
+            make.top.equalToSuperview().offset(166)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(videoContainerView.snp.width).multipliedBy(9.0 / 16.0)
         }
         
         settingsButton.snp.makeConstraints { make in
@@ -102,19 +105,12 @@ class MainView: UIView {
             make.bottom.equalTo(infoButton.snp.top).offset(-30)
         }
         
-        // 스킵 버튼 설정
-        addSubview(skipButton)
-        skipButton.setTitle("Skip", for: .normal)
-        skipButton.setTitleColor(.white, for: .normal)
-        skipButton.backgroundColor = UIColor(white: 0, alpha: 0.5)
-        skipButton.layer.cornerRadius = 5
-        skipButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            skipButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            skipButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50),
-            skipButton.widthAnchor.constraint(equalToConstant: 80),
-            skipButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
+        skipButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-20)
+            make.bottom.equalToSuperview().offset(-50)
+            make.width.equalTo(80)
+            make.height.equalTo(40)
+        }
     }
     
     private func setupVideoPlayer() {
@@ -127,15 +123,13 @@ class MainView: UIView {
         player = AVPlayer(url: videoURL)
         
         playerLayer = AVPlayerLayer(player: player)
-        playerLayer?.videoGravity = .resizeAspectFill // 비율을 유지하면서 여백을 제거하여 가득 채우기
+        playerLayer?.videoGravity = .resizeAspectFill
         playerLayer?.frame = videoContainerView.bounds
         playerLayer?.backgroundColor = UIColor(hex: "#01B42F").cgColor
-        videoContainerView.layer.addSublayer(playerLayer!) // playerLayer를 videoContainerView에 추가
+        videoContainerView.layer.addSublayer(playerLayer!)
         
-        // 비디오 자동 재생
         player?.play()
         
-        // 비디오가 끝났을 때 알림 설정
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(videoDidEnd),
                                                name: .AVPlayerItemDidPlayToEndTime,
@@ -147,30 +141,27 @@ class MainView: UIView {
     }
     
     func showButtons() {
-        // 버튼들을 표시
         startButton.isHidden = false
         infoButton.isHidden = false
         settingsButton.isHidden = false
-        skipButton.isHidden = true // 스킵 버튼 숨기기
+        skipButton.isHidden = true
     }
     
     func skipToEndOfVideo() {
         guard let player = player, let duration = player.currentItem?.duration else { return }
         let endTime = CMTimeGetSeconds(duration)
         player.seek(to: CMTime(seconds: endTime, preferredTimescale: 600)) { [weak self] _ in
-            player.pause() // 영상 멈추기
-            self?.showButtons() // 버튼 보이기
+            player.pause()
+            self?.showButtons()
         }
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        // layoutSubviews에서 playerLayer의 frame을 업데이트
         playerLayer?.frame = videoContainerView.bounds
     }
     
     deinit {
-        // NotificationCenter 해제
         NotificationCenter.default.removeObserver(self)
     }
 }
