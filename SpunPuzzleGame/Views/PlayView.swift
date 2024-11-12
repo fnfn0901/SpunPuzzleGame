@@ -144,21 +144,24 @@ class PlayView: UIView {
         // 정답 영역 배경 숨김
         answerZoneView.backgroundColor = .clear
 
-        // 정답 쿠키는 유지 (answerImages에 추가된 이미지들)
+        // 정답 쿠키는 유지
         for imageView in answerImages {
             imageView.isHidden = false
         }
-
-        // answerZoneView 위치 변경
-        answerZoneView.snp.remakeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview()
-            $0.width.equalTo(228)
-            $0.height.equalTo(10)
-        }
-
-        // 레이아웃 업데이트
-        layoutIfNeeded()
+        
+        // 애니메이션 적용
+        UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1.5, options: [.curveEaseInOut], animations: {
+            // answerZoneView 위치 변경
+            self.answerZoneView.snp.remakeConstraints {
+                $0.centerX.equalToSuperview()
+                $0.centerY.equalToSuperview()
+                $0.width.equalTo(228)
+                $0.height.equalTo(10)
+            }
+            
+            // 레이아웃 업데이트
+            self.layoutIfNeeded()
+        })
     }
     
     // MARK: - Helper Methods
