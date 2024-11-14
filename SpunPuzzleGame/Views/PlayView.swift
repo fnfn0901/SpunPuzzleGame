@@ -235,7 +235,6 @@ class PlayView: UIView {
     func hideBottomContent() {
         puzzleBundleView.isHidden = true
         answerZoneView.isHidden = true
-        progressView.isHidden = true
     }
 
     func showBottomContent() {
