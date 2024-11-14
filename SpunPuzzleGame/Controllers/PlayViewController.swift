@@ -16,7 +16,7 @@ class PlayViewController: UIViewController {
 
     private var quizzes: [Quiz] = [
         Quiz(questionVideo: "거미 문제", puzzle: ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"], answer: ["ㄱ", "ㅓ", "ㅁ", "ㅣ"], answerVideo: "거미 정답"),
-        Quiz(questionVideo: "나비 문제", puzzle: ["ㅣ", "ㅉ", "ㅏ", "ㅐ", "ㄴ", "ㅉ", "ㅗ", "ㅂ"], answer: ["ㄴ", "ㅏ", "ㅂ", "ㅣ"], answerVideo: "나비 정답"),
+        Quiz(questionVideo: "나비 문제", puzzle: ["ㅣ", "ㅉ", "ㅏ", "ㅐ", "ㄴ", "ㅋ", "ㅗ", "ㅂ"], answer: ["ㄴ", "ㅏ", "ㅂ", "ㅣ"], answerVideo: "나비 정답"),
         Quiz(questionVideo: "사자 문제", puzzle: ["ㅋ", "ㅈ", "ㅗ", "ㅑ", "ㅠ", "ㅍ", "ㅅ", "ㅏ"], answer: ["ㅅ", "ㅏ", "ㅈ", "ㅏ"], answerVideo: "사자 정답"),
         Quiz(questionVideo: "하마 문제", puzzle: ["ㅁ", "ㅈ", "ㅏ", "ㅔ", "ㅇ", "ㄸ", "ㅃ", "ㅎ"], answer: ["ㅎ", "ㅏ", "ㅁ", "ㅏ"], answerVideo: "하마 정답")
     ]
@@ -76,11 +76,11 @@ class PlayViewController: UIViewController {
         if piece == playView.correctAnswer[selectedAnswers.count] {
             // 올바른 조각 선택
             selectedAnswers.append(piece)
-            playSound(named: "click.mp3")
+            playSound(named: "click.wav")
             playView.updateAnswerZone(with: selectedAnswers)
         } else {
             // 잘못된 조각 선택
-            playSound(named: "wrong.mp3")
+            playSound(named: "wrong.wav")
             triggerHapticFeedback()
         }
 
