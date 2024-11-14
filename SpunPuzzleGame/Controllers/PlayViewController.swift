@@ -101,8 +101,13 @@ class PlayViewController: UIViewController {
             playSound(named: "pass.wav")
             playView.displayCorrectAnswer(with: quizzes[currentQuizIndex].answerVideo)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-                self?.goToNextQuiz()
+            // 정답인 경우에만 onVideoEnd 설정
+            playView.videoContainerView.onVideoEnd = { [weak self] in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { 
+                    self?.goToNextQuiz()
+                    // 클로저 초기화
+                    self?.playView.videoContainerView.onVideoEnd = nil
+                }
             }
         } else {
             playView.resetAnswerZone()

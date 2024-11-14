@@ -5,12 +5,11 @@ class VideoContainerView: UIView {
     
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
+    var onVideoEnd: (() -> Void)? // 비디오 종료 시 호출할 클로저 추가
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
-        setupVideoPlayer(fileName: "거미 문제")
-        setupTapGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -41,18 +40,15 @@ class VideoContainerView: UIView {
         }
         
         // 비디오가 끝났을 때 알림 설정
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(videoDidEnd),
-                                               name: .AVPlayerItemDidPlayToEndTime,
-                                               object: player?.currentItem)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(videoDidEnd),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player?.currentItem
+        )
         
         // 자동 재생
         player?.play()
-    }
-    
-    private func setupTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(replayVideo))
-        addGestureRecognizer(tapGesture)
     }
     
     func stopVideo() {
@@ -62,18 +58,15 @@ class VideoContainerView: UIView {
     func replaceVideo(with fileName: String) {
         stopVideo() // 기존 비디오 중단
         playerLayer?.removeFromSuperlayer() // 기존 플레이어 레이어 제거
+        
         setupVideoPlayer(fileName: fileName) // 새로운 비디오 설정
         
         print("Video replaced with: \(fileName)")
     }
     
     @objc private func videoDidEnd() {
-        // 원하는 중간 지점 (50%)으로 이동하여 썸네일로 설정
-        if let duration = player?.currentItem?.duration {
-            let middleTime = CMTimeMultiplyByFloat64(duration, multiplier: 0.5) // 영상의 50% 지점
-            player?.seek(to: middleTime, toleranceBefore: .zero, toleranceAfter: .zero)
-            player?.pause()
-        }
+        // 비디오 종료 시 클로저 호출
+        onVideoEnd?()
     }
     
     @objc private func replayVideo() {
