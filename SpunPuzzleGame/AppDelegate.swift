@@ -1,15 +1,28 @@
 import UIKit
+import AVFoundation
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // 앱이 시작될 때 필요한 설정을 초기화
+        // 앱이 시작될 때 오디오 세션 설정
+        configureAudioSession()
         return true
     }
 
+    func configureAudioSession() {
+        do {
+            // AVAudioSession을 playback 모드로 설정하여 소리가 나오도록 합니다.
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            print("Audio session configured for playback.")
+        } catch {
+            print("Failed to configure audio session: \(error)")
+        }
+    }
+
     // MARK: UISceneSession Lifecycle
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
 
