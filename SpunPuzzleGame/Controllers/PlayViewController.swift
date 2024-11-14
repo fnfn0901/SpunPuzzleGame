@@ -37,7 +37,6 @@ class PlayViewController: UIViewController {
     // MARK: - 초기 설정
     private func initializeGame() {
         guard currentQuizIndex < quizzes.count else {
-            print("모든 문제를 완료했습니다.")
             return
         }
 
@@ -47,7 +46,6 @@ class PlayViewController: UIViewController {
         playView.progressView.setProgress(currentProgress: CGFloat(currentQuizIndex + 1), maxProgress: CGFloat(quizzes.count))
         playView.updateQuizData(puzzle: currentQuiz.puzzle, correctAnswer: currentQuiz.answer, video: currentQuiz.questionVideo)
 
-        print("initializeGame called for quiz \(currentQuizIndex)")
     }
 
     // MARK: - 액션 설정
@@ -72,8 +70,6 @@ class PlayViewController: UIViewController {
 
     // MARK: - 퍼즐 조각 선택 처리
     private func handlePuzzlePieceTapped(_ piece: String) {
-        print("Selected piece: \(piece)")
-        print("Expected answer: \(playView.correctAnswer[selectedAnswers.count])")
 
         guard selectedAnswers.count < playView.correctAnswer.count else { return }
 
@@ -82,11 +78,9 @@ class PlayViewController: UIViewController {
             selectedAnswers.append(piece)
             playSound(named: "click.mp3")
             playView.updateAnswerZone(with: selectedAnswers)
-            print("Correct piece! Current answers: \(selectedAnswers)")
         } else {
             // 잘못된 조각 선택
             playSound(named: "wrong.mp3")
-            print("Wrong piece!")
         }
 
         // 정답 완성 여부 확인
@@ -110,7 +104,7 @@ class PlayViewController: UIViewController {
                     self.playView.videoContainerView.replaceVideo(with: "그럼 다음에 또 만나")
                     self.playView.videoContainerView.onVideoEnd = {
                         self.returnToMainMenu()
-                    }
+                   }
                 } else {
                     // 다음 문제로 이동
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
@@ -135,7 +129,6 @@ class PlayViewController: UIViewController {
         if currentQuizIndex < quizzes.count {
             initializeGame()
         } else {
-            print("모든 문제를 완료했습니다.")
             exitGame()
         }
     }

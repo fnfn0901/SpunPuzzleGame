@@ -62,7 +62,6 @@ class VideoContainerView: UIView {
         stopVideo() // 기존 비디오 중단
         setupVideoPlayer(fileName: fileName) // 새로운 비디오 설정
         
-        print("Video replaced with: \(fileName)")
     }
     
     func seekToStartAndPause() {
