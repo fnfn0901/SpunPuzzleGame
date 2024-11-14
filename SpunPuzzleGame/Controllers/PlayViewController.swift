@@ -81,6 +81,7 @@ class PlayViewController: UIViewController {
         } else {
             // 잘못된 조각 선택
             playSound(named: "wrong.mp3")
+            triggerHapticFeedback()
         }
 
         // 정답 완성 여부 확인
@@ -89,6 +90,15 @@ class PlayViewController: UIViewController {
         }
     }
 
+    private func triggerHapticFeedback() {
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        for i in 0..<3 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) {
+                generator.impactOccurred() // 진동 발생
+            }
+        }
+    }
+    
     // MARK: - 정답 확인
     private func checkAnswer() {
         if selectedAnswers == playView.correctAnswer {
