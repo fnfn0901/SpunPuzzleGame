@@ -17,8 +17,8 @@ class PlayViewController: UIViewController {
     private var quizzes: [Quiz] = [
         Quiz(questionVideo: "거미 문제", puzzle: ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"], answer: ["ㄱ", "ㅓ", "ㅁ", "ㅣ"], answerVideo: "거미 정답"),
         Quiz(questionVideo: "나비 문제", puzzle: ["ㅣ", "ㅉ", "ㅏ", "ㅐ", "ㄴ", "ㅉ", "ㅗ", "ㅂ"], answer: ["ㄴ", "ㅏ", "ㅂ", "ㅣ"], answerVideo: "나비 정답"),
-        Quiz(questionVideo: "사자 문제", puzzle: ["ㅏ", "ㅈ", "ㅗ", "ㅑ", "ㅠ", "ㅍ", "ㅅ", "ㅏ"], answer: ["ㅅ", "ㅏ", "ㅈ", "ㅏ"], answerVideo: "사자 정답"),
-        Quiz(questionVideo: "하마 문제", puzzle: ["ㅁ", "ㅈ", "ㅏ", "ㅔ", "ㅇ", "ㅏ", "ㅃ", "ㅎ"], answer: ["ㅎ", "ㅏ", "ㅁ", "ㅏ"], answerVideo: "하마 정답")
+        Quiz(questionVideo: "사자 문제", puzzle: ["ㅋ", "ㅈ", "ㅗ", "ㅑ", "ㅠ", "ㅍ", "ㅅ", "ㅏ"], answer: ["ㅅ", "ㅏ", "ㅈ", "ㅏ"], answerVideo: "사자 정답"),
+        Quiz(questionVideo: "하마 문제", puzzle: ["ㅁ", "ㅈ", "ㅏ", "ㅔ", "ㅇ", "ㄸ", "ㅃ", "ㅎ"], answer: ["ㅎ", "ㅏ", "ㅁ", "ㅏ"], answerVideo: "하마 정답")
     ]
 
     private var currentQuizIndex = 0
@@ -101,17 +101,32 @@ class PlayViewController: UIViewController {
             playSound(named: "pass.wav")
             playView.displayCorrectAnswer(with: quizzes[currentQuizIndex].answerVideo)
 
-            // 정답인 경우에만 onVideoEnd 설정
             playView.videoContainerView.onVideoEnd = { [weak self] in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { 
-                    self?.goToNextQuiz()
-                    // 클로저 초기화
-                    self?.playView.videoContainerView.onVideoEnd = nil
+                guard let self = self else { return }
+
+                if self.currentQuizIndex == self.quizzes.count - 1 {
+                    // 마지막 문제라면 "그럼 다음에 또 만나" 영상 재생
+                    self.playView.hideBottomContent() // 하단 콘텐츠 숨기기
+                    self.playView.videoContainerView.replaceVideo(with: "그럼 다음에 또 만나")
+                    self.playView.videoContainerView.onVideoEnd = {
+                        self.returnToMainMenu()
+                    }
+                } else {
+                    // 다음 문제로 이동
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+                        self.goToNextQuiz()
+                        self.playView.videoContainerView.onVideoEnd = nil
+                    }
                 }
             }
         } else {
             playView.resetAnswerZone()
         }
+    }
+    
+    private func returnToMainMenu() {
+        playView.videoContainerView.stopVideo()
+        navigationController?.popToRootViewController(animated: true)
     }
 
     // MARK: - 다음 문제로 이동

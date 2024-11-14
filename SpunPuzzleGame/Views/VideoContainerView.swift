@@ -39,7 +39,8 @@ class VideoContainerView: UIView {
             layer.addSublayer(playerLayer)
         }
         
-        // 비디오가 끝났을 때 알림 설정
+        // 기존 알림 제거 후 새 알림 설정
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(videoDidEnd),
@@ -53,15 +54,21 @@ class VideoContainerView: UIView {
     
     func stopVideo() {
         player?.pause() // 비디오 재생 중단
+        player = nil
+        playerLayer?.removeFromSuperlayer()
     }
     
     func replaceVideo(with fileName: String) {
         stopVideo() // 기존 비디오 중단
-        playerLayer?.removeFromSuperlayer() // 기존 플레이어 레이어 제거
-        
         setupVideoPlayer(fileName: fileName) // 새로운 비디오 설정
         
         print("Video replaced with: \(fileName)")
+    }
+    
+    func seekToStartAndPause() {
+        // 비디오 시작 지점으로 이동 후 일시정지
+        player?.seek(to: .zero)
+        player?.pause()
     }
     
     @objc private func videoDidEnd() {
@@ -73,6 +80,11 @@ class VideoContainerView: UIView {
         // 비디오를 처음부터 다시 재생
         player?.seek(to: .zero)
         player?.play()
+    }
+    
+    func isPlaying() -> Bool {
+        // 비디오 재생 여부 확인
+        return player?.rate != 0 && player?.error == nil
     }
     
     override func layoutSubviews() {

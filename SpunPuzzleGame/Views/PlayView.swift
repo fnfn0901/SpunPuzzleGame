@@ -230,6 +230,19 @@ class PlayView: UIView {
         }
         return gridStackView
     }
+    
+    // MARK: - 하단 콘텐츠 숨기기/표시
+    func hideBottomContent() {
+        puzzleBundleView.isHidden = true
+        answerZoneView.isHidden = true
+        progressView.isHidden = true
+    }
+
+    func showBottomContent() {
+        puzzleBundleView.isHidden = false
+        answerZoneView.isHidden = false
+        progressView.isHidden = false
+    }
 
     @objc private func puzzlePieceTappedAction(_ sender: UIButton) {
         guard let piece = sender.accessibilityLabel else { return }
