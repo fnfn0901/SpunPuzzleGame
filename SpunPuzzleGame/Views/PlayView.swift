@@ -18,7 +18,7 @@ class PlayView: UIView {
     let answerZoneView: UIView = createAnswerZoneView()
 
     private var answerImages: [UIImageView] = []
-    private var audioPlayer: AVAudioPlayer?
+    private var successLabel: UILabel?
 
     // MARK: - 초기화
     override init(frame: CGRect) {
@@ -95,13 +95,6 @@ class PlayView: UIView {
             $0.width.equalTo(345)
             $0.height.equalTo(175)
         }
-
-        let imageNames = ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"]
-        let gridStackView = createGridStackView(with: imageNames)
-        puzzleBundleView.addSubview(gridStackView)
-        gridStackView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(10)
-        }
     }
 
     private func setupAnswerZoneView() {
@@ -113,8 +106,34 @@ class PlayView: UIView {
         }
     }
 
-    // MARK: - 퍼즐 정답 업데이트
+    // MARK: - UI 업데이트
+    func resetView() {
+        resetAnswerZone()
+        puzzleBundleView.isHidden = false
+    }
+
+    func resetAnswerZone() {
+        answerImages.forEach { $0.removeFromSuperview() }
+        answerImages.removeAll()
+        successLabel?.removeFromSuperview()
+        answerZoneView.backgroundColor = UIColor(hex: "#E3E3E3") // 기본 배경색 복원
+    }
+
+    func updateQuizData(puzzle: [String], correctAnswer: [String], video: String) {
+        self.correctAnswer = correctAnswer
+        updatePuzzle(with: puzzle)
+        videoContainerView.replaceVideo(with: video)
+    }
+
+    func updatePuzzle(with puzzle: [String]) {
+        puzzleBundleView.subviews.forEach { $0.removeFromSuperview() }
+        let gridStackView = createGridStackView(with: puzzle)
+        puzzleBundleView.addSubview(gridStackView)
+        gridStackView.snp.makeConstraints { $0.edges.equalToSuperview().inset(10) }
+    }
+
     func updateAnswerZone(with answers: [String]) {
+        // 기존 정답 이미지를 제거
         answerImages.forEach { $0.removeFromSuperview() }
         answerImages.removeAll()
 
@@ -122,6 +141,7 @@ class PlayView: UIView {
         let spacing: CGFloat = -10
         let startX = (answerZoneView.bounds.width - (imageSize + spacing) * CGFloat(answers.count) + spacing) / 2
 
+        // 새 정답 이미지를 추가
         for (index, answer) in answers.enumerated() {
             let imageView = UIImageView(image: UIImage(named: answer))
             imageView.contentMode = .scaleAspectFit
@@ -134,73 +154,38 @@ class PlayView: UIView {
         }
     }
 
-    // MARK: - 정답 맞춘 후 화면 변경
-    func updateViewForCorrectAnswer(with answers: [String]) {
-        // 1. 퍼즐 영역 숨김
+    func displayCorrectAnswer(with video: String) {
         puzzleBundleView.isHidden = true
+        videoContainerView.replaceVideo(with: video)
 
-        // 2. 정답 영역 위치를 videoContainerView 아래로 변경
-        UIView.animate(withDuration: 0.5, animations: {
-            self.answerZoneView.backgroundColor = .clear
-            self.answerZoneView.snp.remakeConstraints {
-                $0.centerX.equalToSuperview() // 화면 중앙
-                $0.top.equalTo(self.videoContainerView.snp.bottom).offset(50) // videoContainerView의 아래 50pt
-                $0.width.equalTo(228) // 크기는 유지
-                $0.height.equalTo(228)
-            }
-            self.layoutIfNeeded()
-        })
+        successLabel = UILabel()
+        successLabel?.text = "정답입니다!"
+        successLabel?.font = UIFont.boldSystemFont(ofSize: 24)
+        successLabel?.textColor = UIColor(hex: "#4CAF50")
+        successLabel?.textAlignment = .center
+        successLabel?.alpha = 0
+        addSubview(successLabel!)
 
-        // 3. 정답 조각 중앙 정렬 + 들썩이는 애니메이션
-        let imageSize: CGFloat = 80
-        let spacing: CGFloat = 10
-        let totalWidth = CGFloat(answers.count) * imageSize + CGFloat(answers.count - 1) * spacing
-        let startX = (answerZoneView.bounds.width - totalWidth) / 2
-
-        for (index, imageView) in answerImages.enumerated() {
-            let delay = Double(index) * 0.2 // 각 조각마다 딜레이 추가
-            let initialTransform = CGAffineTransform(translationX: 0, y: 20).scaledBy(x: 0.8, y: 0.8) // 시작 크기와 위치 설정
-            let finalTransform = CGAffineTransform.identity // 최종 위치
-
-            imageView.transform = initialTransform // 초기 상태 설정
-            imageView.alpha = 0 // 초기 투명도
-
-            UIView.animate(withDuration: 0.6, delay: delay, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.5, options: [.curveEaseInOut], animations: {
-                let xPosition = startX + CGFloat(index) * (imageSize + spacing)
-                let yPosition = (228 - imageSize) / 2 // answerZoneView의 세로 중앙
-                imageView.frame = CGRect(x: xPosition, y: yPosition, width: imageSize, height: imageSize)
-                imageView.alpha = 1.0
-                imageView.transform = finalTransform
-            }, completion: nil)
-
-            // 추가적인 회전 애니메이션
-            UIView.animateKeyframes(withDuration: 0.6, delay: delay, options: [], animations: {
-                UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.5) {
-                    imageView.transform = imageView.transform.rotated(by: CGFloat.pi / 8)
-                }
-                UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
-                    imageView.transform = imageView.transform.rotated(by: -CGFloat.pi / 8)
-                }
-            }, completion: nil)
-        }
-
-        // 4. 성공 메시지 표시
-        let successLabel = UILabel()
-        successLabel.text = "정답입니다!"
-        successLabel.font = UIFont.boldSystemFont(ofSize: 24)
-        successLabel.textColor = UIColor(hex: "#4CAF50")
-        successLabel.textAlignment = .center
-        successLabel.alpha = 0
-        addSubview(successLabel)
-
-        successLabel.snp.makeConstraints {
+        successLabel?.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(answerZoneView.snp.bottom).offset(20)
         }
 
-        UIView.animate(withDuration: 0.5, delay: Double(answers.count) * 0.2, options: [.curveEaseInOut], animations: {
-            successLabel.alpha = 1.0
-        }, completion: nil)
+        UIView.animate(withDuration: 0.5) {
+            self.successLabel?.alpha = 1.0
+        }
+    }
+
+    func showCustomAlert() {
+        dimmingView.isHidden = false
+        customAlertView.isHidden = false
+        bringSubviewToFront(dimmingView)
+        bringSubviewToFront(customAlertView)
+    }
+
+    func hideCustomAlert() {
+        dimmingView.isHidden = true
+        customAlertView.isHidden = true
     }
 
     // MARK: - Helper Methods
@@ -233,11 +218,11 @@ class PlayView: UIView {
 
             for col in 0..<4 {
                 let index = row * 4 + col
+                guard index < imageNames.count else { break }
+
                 let button = UIButton()
-                button.tag = index
-                if let image = UIImage(named: imageNames[index]) {
-                    button.setImage(image, for: .normal)
-                }
+                button.setImage(UIImage(named: imageNames[index]), for: .normal)
+                button.accessibilityLabel = imageNames[index] // 퍼즐 텍스트를 저장
                 button.addTarget(self, action: #selector(puzzlePieceTappedAction(_:)), for: .touchUpInside)
                 rowStackView.addArrangedSubview(button)
             }
@@ -247,8 +232,14 @@ class PlayView: UIView {
     }
 
     @objc private func puzzlePieceTappedAction(_ sender: UIButton) {
-        let imageNames = ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"]
-        let piece = imageNames[sender.tag]
+        guard let piece = sender.accessibilityLabel else { return }
         puzzlePieceTapped?(piece)
+    }
+}
+
+// MARK: - Array Extension for Safe Indexing
+extension Array {
+    subscript(safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }

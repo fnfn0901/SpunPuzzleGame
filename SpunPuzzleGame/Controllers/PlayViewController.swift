@@ -1,12 +1,27 @@
 import UIKit
 import AVFoundation
 
+struct Quiz {
+    let questionVideo: String
+    let puzzle: [String]
+    let answer: [String]
+    let answerVideo: String
+}
+
 class PlayViewController: UIViewController {
 
     private let playView = PlayView()
     private var selectedAnswers: [String] = []
-    private let correctAnswer = ["ㄱ", "ㅓ", "ㅁ", "ㅣ"]
     private var audioPlayer: AVAudioPlayer?
+
+    private var quizzes: [Quiz] = [
+        Quiz(questionVideo: "거미 문제", puzzle: ["ㄱ", "ㅂ", "ㅓ", "ㅠ", "ㅣ", "ㅋ", "ㅁ", "ㅐ"], answer: ["ㄱ", "ㅓ", "ㅁ", "ㅣ"], answerVideo: "거미 정답"),
+        Quiz(questionVideo: "나비 문제", puzzle: ["ㅣ", "ㅉ", "ㅏ", "ㅐ", "ㄴ", "ㅉ", "ㅗ", "ㅂ"], answer: ["ㄴ", "ㅏ", "ㅂ", "ㅣ"], answerVideo: "나비 정답"),
+        Quiz(questionVideo: "사자 문제", puzzle: ["ㅏ", "ㅈ", "ㅗ", "ㅑ", "ㅠ", "ㅍ", "ㅅ", "ㅏ"], answer: ["ㅅ", "ㅏ", "ㅈ", "ㅏ"], answerVideo: "사자 정답"),
+        Quiz(questionVideo: "하마 문제", puzzle: ["ㅁ", "ㅈ", "ㅏ", "ㅔ", "ㅇ", "ㅏ", "ㅃ", "ㅎ"], answer: ["ㅎ", "ㅏ", "ㅁ", "ㅏ"], answerVideo: "하마 정답")
+    ]
+
+    private var currentQuizIndex = 0
 
     override func loadView() {
         view = playView
@@ -21,36 +36,35 @@ class PlayViewController: UIViewController {
 
     // MARK: - 초기 설정
     private func initializeGame() {
-        playView.progressView.setProgress(currentProgress: 1, maxProgress: 14)
-        playView.correctAnswer = correctAnswer
-        playView.selectedAnswers = selectedAnswers
+        guard currentQuizIndex < quizzes.count else {
+            print("모든 문제를 완료했습니다.")
+            return
+        }
+
+        let currentQuiz = quizzes[currentQuizIndex]
+        selectedAnswers.removeAll()
+        playView.resetView() // 이전 문제 UI 초기화
+        playView.progressView.setProgress(currentProgress: CGFloat(currentQuizIndex + 1), maxProgress: CGFloat(quizzes.count))
+        playView.updateQuizData(puzzle: currentQuiz.puzzle, correctAnswer: currentQuiz.answer, video: currentQuiz.questionVideo)
+
+        print("initializeGame called for quiz \(currentQuizIndex)")
     }
 
     // MARK: - 액션 설정
     private func setupActions() {
-        // 뒤로 가기 버튼
         playView.navigationBar.backButtonAction = { [weak self] in
             self?.showCustomAlert()
         }
-
-        // 설정 버튼
         playView.navigationBar.settingsButtonAction = { [weak self] in
             self?.showSettingsModal()
         }
-
-        // 화면 바깥 터치로 알림 닫기
         playView.dimmingView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideCustomAlert)))
-
-        // 사용자 정의 알림 버튼 동작 설정
         playView.customAlertView.cancelAction = { [weak self] in
             self?.hideCustomAlert()
         }
-
         playView.customAlertView.exitAction = { [weak self] in
             self?.exitGame()
         }
-
-        // 퍼즐 조각 선택 동작 설정
         playView.puzzlePieceTapped = { [weak self] piece in
             self?.handlePuzzlePieceTapped(piece)
         }
@@ -58,34 +72,51 @@ class PlayViewController: UIViewController {
 
     // MARK: - 퍼즐 조각 선택 처리
     private func handlePuzzlePieceTapped(_ piece: String) {
-        guard selectedAnswers.count < correctAnswer.count else { return }
+        print("Selected piece: \(piece)")
+        print("Expected answer: \(playView.correctAnswer[selectedAnswers.count])")
 
-        if piece == correctAnswer[selectedAnswers.count] {
-            // 정답 조각 선택
+        guard selectedAnswers.count < playView.correctAnswer.count else { return }
+
+        if piece == playView.correctAnswer[selectedAnswers.count] {
+            // 올바른 조각 선택
             selectedAnswers.append(piece)
-            playSound(named: "click.mp3") // 정답 효과음
+            playSound(named: "click.mp3")
             playView.updateAnswerZone(with: selectedAnswers)
+            print("Correct piece! Current answers: \(selectedAnswers)")
         } else {
-            playSound(named: "wrong.mp3") // 오답 효과음
+            // 잘못된 조각 선택
+            playSound(named: "wrong.mp3")
+            print("Wrong piece!")
         }
 
-        if selectedAnswers.count == correctAnswer.count {
-            // 정답 확인
+        // 정답 완성 여부 확인
+        if selectedAnswers.count == playView.correctAnswer.count {
             checkAnswer()
         }
     }
 
     // MARK: - 정답 확인
     private func checkAnswer() {
-        if selectedAnswers == correctAnswer {
-            // 정답 처리
-            playSound(named: "pass.wav") // 정답 완료 효과음
-            playView.videoContainerView.replaceVideo(with: "거미 정답")
-            playView.updateViewForCorrectAnswer(with: correctAnswer)
+        if selectedAnswers == playView.correctAnswer {
+            playSound(named: "pass.wav")
+            playView.displayCorrectAnswer(with: quizzes[currentQuizIndex].answerVideo)
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+                self?.goToNextQuiz()
+            }
         } else {
-            // 오답 처리 (선택 초기화)
-            selectedAnswers.removeAll()
-            playView.updateAnswerZone(with: selectedAnswers)
+            playView.resetAnswerZone()
+        }
+    }
+
+    // MARK: - 다음 문제로 이동
+    private func goToNextQuiz() {
+        currentQuizIndex += 1
+        if currentQuizIndex < quizzes.count {
+            initializeGame()
+        } else {
+            print("모든 문제를 완료했습니다.")
+            exitGame()
         }
     }
 
@@ -102,15 +133,11 @@ class PlayViewController: UIViewController {
 
     // MARK: - 사용자 정의 알림
     private func showCustomAlert() {
-        playView.dimmingView.isHidden = false
-        playView.customAlertView.isHidden = false
-        view.bringSubviewToFront(playView.dimmingView)
-        view.bringSubviewToFront(playView.customAlertView)
+        playView.showCustomAlert()
     }
 
     @objc private func hideCustomAlert() {
-        playView.dimmingView.isHidden = true
-        playView.customAlertView.isHidden = true
+        playView.hideCustomAlert()
     }
 
     // MARK: - 설정 화면 표시

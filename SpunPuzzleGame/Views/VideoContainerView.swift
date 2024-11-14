@@ -63,6 +63,8 @@ class VideoContainerView: UIView {
         stopVideo() // 기존 비디오 중단
         playerLayer?.removeFromSuperlayer() // 기존 플레이어 레이어 제거
         setupVideoPlayer(fileName: fileName) // 새로운 비디오 설정
+        
+        print("Video replaced with: \(fileName)")
     }
     
     @objc private func videoDidEnd() {
