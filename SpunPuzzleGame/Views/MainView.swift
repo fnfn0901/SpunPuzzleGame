@@ -143,7 +143,7 @@ class MainView: UIView {
     func showButtons() {
         startButton.isHidden = false
         infoButton.isHidden = false
-        settingsButton.isHidden = false
+        settingsButton.isHidden = true
         skipButton.isHidden = true
     }
     
