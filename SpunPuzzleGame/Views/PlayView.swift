@@ -177,6 +177,10 @@ class PlayView: UIView {
         }
     }
 
+    func hideSuccessLabel() {
+        successLabel?.isHidden = true
+    }
+
     func showCustomAlert() {
         dimmingView.isHidden = false
         customAlertView.isHidden = false

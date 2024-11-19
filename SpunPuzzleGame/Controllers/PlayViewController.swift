@@ -109,14 +109,14 @@ class PlayViewController: UIViewController {
                 guard let self = self else { return }
 
                 if self.currentQuizIndex == self.quizzes.count - 1 {
-                    // 마지막 문제라면 "그럼 다음에 또 만나" 영상 재생
-                    self.playView.hideBottomContent() // 하단 콘텐츠 숨기기
+                    self.playView.hideSuccessLabel() // 정답 텍스트 숨기기
+                    self.playView.hideBottomContent()
                     self.playView.videoContainerView.replaceVideo(with: "그럼 다음에 또 만나")
                     self.playView.videoContainerView.onVideoEnd = {
                         self.returnToMainMenu()
-                   }
+                    }
+                    self.playView.hideSuccessLabel()
                 } else {
-                    // 다음 문제로 이동
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
                         self.goToNextQuiz()
                         self.playView.videoContainerView.onVideoEnd = nil
