@@ -10,7 +10,7 @@ class CustomNavigationBar: UIView {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "가나다 한글 놀이"
+        label.text = "가나다 퍼즐 게임"
         label.textColor = .white
         label.font = UIFont(name: "Inter24pt-Bold", size: 24)
         return label
