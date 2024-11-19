@@ -168,7 +168,8 @@ class PlayView: UIView {
 
         successLabel?.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(answerZoneView.snp.bottom).offset(20)
+            $0.top.equalTo(videoContainerView.snp.bottom).offset(20)
+            $0.bottom.equalTo(answerZoneView.snp.top).offset(-20)
         }
 
         UIView.animate(withDuration: 0.5) {
