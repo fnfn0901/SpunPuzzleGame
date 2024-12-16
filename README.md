@@ -3,10 +3,12 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/9cca8637-d7d9-4ab6-bcb3-205af8b5f5c4" alt="AppIcon" width="200" />
 </div>
+
 가나다 퍼즐 게임은 [스푼랩](http://www.ssalfriends.com/)과의 협업 프로젝트로, 아이들이 한글 퍼즐을 통해 학습하면서 쌀의 매력을 느낄 수 있도록 제작된 iOS 전용 게임입니다.
 해당 프로젝트는 스푼랩의 브랜드 정체성을 반영하여 식품을 단순히 섭취하는 데에서 멈추지 않고, 이를 지속 가능한 경험으로 확장하는데 포커싱 했습니다.
 게임은 힌트 동영상을 시청하고, 퍼즐 조각을 조합하여 정답을 완성하는 방식으로 진행됩니다.
 백엔드 없이 로컬 데이터를 활용해 MVP 형태로 개발되었습니다.
+
 <div align="center">
   <img src="https://github.com/user-attachments/assets/3eab5dfd-bdd6-40bd-928d-62e8efdca881" alt="최종 화면" width="400" />
 </div>
